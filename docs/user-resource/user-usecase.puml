@@ -1,0 +1,68 @@
+@startuml
+'https://plantuml.com/use-case-diagram'
+
+actor "User" as us
+actor "Manager" as mg
+actor "Student" as sd
+
+us <|-- mg
+us <|-- sd
+
+rectangle "Quiz Manager System" {
+    usecase "Login" as UC_Login
+    usecase "Register" as UC_Register
+
+    usecase "Create quiz" as UC_CreateQuiz
+    usecase "Update quiz" as UC_UpdateQuiz
+    usecase "Delete quiz" as UC_DeleteQuiz
+    usecase "View quizzes" as UC_ViewQuizzes
+
+    usecase "Create question list" as UC_CreateQList
+    usecase "Update question list" as UC_UpdateQList
+    usecase "Delete question list" as UC_DeleteQList
+    usecase "View question lists" as UC_ViewQLists
+
+    usecase "Create question" as UC_CreateQ
+    usecase "Update question" as UC_UpdateQ
+    usecase "Delete question" as UC_DeleteQ
+    usecase "View questions" as UC_ViewQs
+
+    usecase "Take quiz" as UC_TakeQuiz
+    usecase "View results" as UC_ViewResults
+}
+
+' General user actions
+us --> UC_Login
+us --> UC_Register
+
+' Manager actions
+mg --> UC_CreateQuiz
+mg --> UC_UpdateQuiz
+mg --> UC_DeleteQuiz
+mg --> UC_ViewQuizzes
+mg --> UC_CreateQList
+mg --> UC_UpdateQList
+mg --> UC_DeleteQList
+mg --> UC_ViewQLists
+mg --> UC_CreateQ
+mg --> UC_UpdateQ
+mg --> UC_DeleteQ
+mg --> UC_ViewQs
+
+' Student actions
+sd --> UC_ViewQuizzes
+sd --> UC_TakeQuiz
+sd --> UC_ViewResults
+
+' Include relationships
+UC_TakeQuiz ..> UC_ViewQs : <<include>>
+UC_ViewResults ..> UC_ViewQuizzes : <<include>>
+
+' Extend relationships
+UC_Login ..> UC_Register : <<extend>>
+UC_CreateQList ..> UC_CreateQ : <<extend>>
+UC_UpdateQuiz ..> UC_ViewQuizzes : <<extend>>
+UC_DeleteQuiz ..> UC_ViewQuizzes : <<extend>>
+UC_CreateQuiz ..> UC_CreateQList : <<extend>>
+
+@enduml
