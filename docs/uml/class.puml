@@ -1,0 +1,138 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+' ===== Actors / Users =====
+class User {
+    # userId : Long
+    # username : String
+    # password : String
+    # age : int
+    + login(username : String, password : String) : boolean
+    + register(user : User) : User
+}
+
+class Manager {
+    - quizList : List<Quiz>
+    - questionLists : List<QuestionList>
+    + importQuestions(file : String) : void
+    + createQuiz(list : QuestionList) : Quiz
+    + updateQuiz(quizId : Long, quiz : Quiz) : Quiz
+    + deleteQuiz(quizId : Long) : void
+    + viewQuiz(quizId : Long) : Quiz
+
+    ' Manual question list operations
+    + createQuestionList(list : QuestionList) : QuestionList
+    + updateQuestionList(listId : Long, list : QuestionList) : QuestionList
+    + deleteQuestionList(listId : Long) : void
+    + viewQuestionList(listId : Long) : QuestionList
+
+    ' Manual question operations inside a QuestionList
+    + createQuestion(listId : Long, question : Question) : Question
+    + updateQuestion(listId : Long, questionId : Long, question : Question) : Question
+    + deleteQuestion(listId : Long, questionId : Long) : void
+    + viewQuestion(listId : Long, questionId : Long) : Question
+}
+
+User <|-- Manager
+
+class Student {
+    - enrolledQuizzes : List<Quiz>
+    + takeQuiz(quizId : Long, answers : List<String>) : int
+    + viewResults(quizId : Long) : int
+}
+
+User <|-- Student
+
+' ===== Abstract Product =====
+abstract class Question {
+    - text : String
+    - marks : int
+    + display() : void
+}
+
+' ===== Concrete Products =====
+class MCQQuestion {
+    - options : List<String>
+    - correctOption : int
+    + display() : void
+}
+
+class TrueFalseQuestion {
+    - correctAnswer : boolean
+    + display() : void
+}
+
+Question <|-- MCQQuestion
+Question <|-- TrueFalseQuestion
+
+' ===== QuestionList =====
+class QuestionList {
+    - questions : List<Question>
+    + addQuestion(q : Question) : void
+    + removeQuestion(qId : Long) : void
+    + getQuestion(qId : Long) : Question
+    + getQuestions() : List<Question>
+}
+
+' Composition: QuestionList owns Questions
+QuestionList "1" *-- "0..*" Question : contains >
+
+' Association: Manager manages QuestionList and Questions
+Manager "1" --> "0..*" QuestionList : manages >
+Manager "1" --> "0..*" Question : manages >
+
+' ===== Factory Method =====
+abstract class QuestionFactory {
+    + createQuestionList(filePath : String) : QuestionList
+}
+
+class CSVQuestionFactory {
+    - parser : CSVParser
+    + createQuestionList(filePath : String) : QuestionList
+}
+
+QuestionFactory <|-- CSVQuestionFactory
+Manager --> QuestionFactory : uses >
+
+' ===== Singleton Parser =====
+class CSVParser {
+    - instance : CSVParser
+    - CSVParser()
+    + getInstance() : CSVParser
+    + parse(filePath : String) : List<String[]>
+}
+
+CSVQuestionFactory --> CSVParser : uses >
+
+' ===== Strategy Pattern (Scoring) =====
+interface ScoringStrategy {
+    + calculateScore(correct : boolean) : int
+}
+
+class NormalScoring {
+    + calculateScore(correct : boolean) : int
+}
+
+class NegativeScoring {
+    - penalty : int
+    + calculateScore(correct : boolean) : int
+}
+
+ScoringStrategy <|.. NormalScoring
+ScoringStrategy <|.. NegativeScoring
+
+' ===== Quiz Context =====
+class Quiz {
+    - questionList : QuestionList
+    - scoringStrategy : ScoringStrategy
+    + setScoringStrategy(strategy : ScoringStrategy) : void
+    + evaluateAnswers(answers : List<String>) : int
+}
+
+Quiz --> ScoringStrategy : uses >
+Quiz --> QuestionList : uses >
+
+' ===== Manager Relations (Reinforced) =====
+Manager "1" --> "0..*" Quiz : manages >
+
+@enduml
