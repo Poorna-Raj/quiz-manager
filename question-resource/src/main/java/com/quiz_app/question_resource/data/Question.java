@@ -15,7 +15,7 @@ public class Question {
     private String question;
 
     @OneToMany(mappedBy = "question",cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Options> options;
+    private List<Option> options;
 
     @Column(name = "answer")
     private String answer;
@@ -39,11 +39,11 @@ public class Question {
         this.question = question;
     }
 
-    public List<Options> getOptions() {
+    public List<Option> getOptions() {
         return options;
     }
 
-    public void setOptions(List<Options> options) {
+    public void setOptions(List<Option> options) {
         this.options = options;
     }
 
