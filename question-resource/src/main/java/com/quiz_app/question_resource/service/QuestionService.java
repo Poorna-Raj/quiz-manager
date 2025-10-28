@@ -2,11 +2,13 @@ package com.quiz_app.question_resource.service;
 
 import com.quiz_app.question_resource.data.*;
 import com.quiz_app.question_resource.exception.BadRequestException;
+import com.quiz_app.question_resource.exception.QuestionNotFound;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -39,6 +41,16 @@ public class QuestionService {
         }
 
         return questionRepository.save(question);
+    }
+
+    public Question getQuestionById(long id){
+        Optional<Question> question = questionRepository.findById(id);
+
+        if(question.isEmpty()){
+            throw new QuestionNotFound("Invalid question for the ID of " + id);
+        }
+
+        return question.get();
     }
 
     public Question mapToQuestion(QuestionRequestDto dto){
