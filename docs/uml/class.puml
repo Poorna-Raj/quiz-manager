@@ -1,7 +1,7 @@
 @startuml
 'https://plantuml.com/class-diagram
 
-' ===== Actors / Users =====
+' ===== Actors =====
 class User {
     # userId : Long
     # username : String
@@ -14,23 +14,19 @@ class User {
 class Manager {
     - quizList : List<Quiz>
     - questionLists : List<QuestionList>
-    + importQuestions(file : String) : void
+
     + createQuiz(list : QuestionList) : Quiz
     + updateQuiz(quizId : Long, quiz : Quiz) : Quiz
     + deleteQuiz(quizId : Long) : void
     + viewQuiz(quizId : Long) : Quiz
 
-    ' Manual question list operations
     + createQuestionList(list : QuestionList) : QuestionList
     + updateQuestionList(listId : Long, list : QuestionList) : QuestionList
-    + deleteQuestionList(listId : Long) : void
+    + deleteQuestionList(listId : Long, listId : Long) : void
     + viewQuestionList(listId : Long) : QuestionList
 
-    ' Manual question operations inside a QuestionList
-    + createQuestion(listId : Long, question : Question) : Question
-    + updateQuestion(listId : Long, questionId : Long, question : Question) : Question
-    + deleteQuestion(listId : Long, questionId : Long) : void
-    + viewQuestion(listId : Long, questionId : Long) : Question
+    + createQuestion(listId : Long, type : String, data : Map) : Question
+    + importQuestions(file : String) : QuestionList
 }
 
 User <|-- Manager
@@ -43,14 +39,13 @@ class Student {
 
 User <|-- Student
 
-' ===== Abstract Product =====
+' ===== Question hierarchy =====
 abstract class Question {
     - text : String
     - marks : int
     + display() : void
 }
 
-' ===== Concrete Products =====
 class MCQQuestion {
     - options : List<String>
     - correctOption : int
@@ -65,6 +60,14 @@ class TrueFalseQuestion {
 Question <|-- MCQQuestion
 Question <|-- TrueFalseQuestion
 
+' ===== Question Factory =====
+class QuestionFactory {
+    + createQuestion(type : String, data : Map) : Question
+}
+
+Manager --> QuestionFactory : uses >
+QuestionFactory --> Question : creates >
+
 ' ===== QuestionList =====
 class QuestionList {
     - questions : List<Question>
@@ -74,35 +77,16 @@ class QuestionList {
     + getQuestions() : List<Question>
 }
 
-' Composition: QuestionList owns Questions
 QuestionList "1" *-- "0..*" Question : contains >
-
-' Association: Manager manages QuestionList and Questions
 Manager "1" --> "0..*" QuestionList : manages >
-Manager "1" --> "0..*" Question : manages >
+Manager "1" --> "0..*" Quiz : manages >
 
-' ===== Factory Method =====
-abstract class QuestionFactory {
-    + createQuestionList(filePath : String) : QuestionList
-}
-
-class CSVQuestionFactory {
-    - parser : CSVParser
-    + createQuestionList(filePath : String) : QuestionList
-}
-
-QuestionFactory <|-- CSVQuestionFactory
-Manager --> QuestionFactory : uses >
-
-' ===== Singleton Parser =====
+' ===== CSV Parser =====
 class CSVParser {
-    - instance : CSVParser
-    - CSVParser()
-    + getInstance() : CSVParser
-    + parse(filePath : String) : List<String[]>
+    + parse(filePath : String) : List<Map>
 }
 
-CSVQuestionFactory --> CSVParser : uses >
+Manager --> CSVParser : uses >  ' simple CSV import
 
 ' ===== Strategy Pattern (Scoring) =====
 interface ScoringStrategy {
@@ -121,7 +105,7 @@ class NegativeScoring {
 ScoringStrategy <|.. NormalScoring
 ScoringStrategy <|.. NegativeScoring
 
-' ===== Quiz Context =====
+' ===== Quiz =====
 class Quiz {
     - questionList : QuestionList
     - scoringStrategy : ScoringStrategy
@@ -131,8 +115,5 @@ class Quiz {
 
 Quiz --> ScoringStrategy : uses >
 Quiz --> QuestionList : uses >
-
-' ===== Manager Relations (Reinforced) =====
-Manager "1" --> "0..*" Quiz : manages >
 
 @enduml
