@@ -4,14 +4,14 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "tbl_question_options")
-public class Options {
+public class Option {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "option_id")
     private long id;
 
-    @Column(name = "option")
-    private String option;
+    @Column(name = "option_text")
+    private String option_text;
 
     @ManyToOne
     @JoinColumn(name = "question_id")
@@ -25,12 +25,12 @@ public class Options {
         this.id = id;
     }
 
-    public String getOption() {
-        return option;
+    public String getOption_text() {
+        return option_text;
     }
 
-    public void setOption(String option) {
-        this.option = option;
+    public void setOption_text(String option_text) {
+        this.option_text = option_text;
     }
 
     public Question getQuestion() {
