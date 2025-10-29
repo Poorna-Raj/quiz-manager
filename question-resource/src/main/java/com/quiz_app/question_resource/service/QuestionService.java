@@ -128,6 +128,7 @@ public class QuestionService {
 
     public QuestionResponseDto mapToDto(Question question){
         QuestionResponseDto dto = new QuestionResponseDto();
+        dto.setId(question.getId());
         dto.setQuestion(question.getQuestion());
         dto.setMarks(question.getMarks());
 
