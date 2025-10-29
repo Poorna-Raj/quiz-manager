@@ -26,4 +26,10 @@ public class QuestionController {
         Question question = service.getQuestionById(id);
         return new ResponseEntity<>(service.mapToDto(question),HttpStatus.OK);
     }
+
+    @PutMapping(path = "/questions/{id}")
+    public ResponseEntity<QuestionResponseDto> updateQuestionById(@PathVariable long id,@RequestBody QuestionRequestDto dto){
+        Question question = service.updateQuestion(id, service.mapToQuestion(dto));
+        return new ResponseEntity<>(service.mapToDto(question),HttpStatus.OK);
+    }
 }
