@@ -13,8 +13,6 @@ import java.util.stream.Collectors;
 
 @Service
 public class QuestionService {
-    @Autowired
-    OptionRepository optionRepository;
 
     @Autowired
     QuestionRepository questionRepository;
