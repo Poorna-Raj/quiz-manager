@@ -17,6 +17,10 @@ public class Question {
     @OneToMany(mappedBy = "question",cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Option> options;
 
+    @ManyToOne
+    @JoinColumn(name = "question_list_id",nullable = false)
+    private QuestionList list;
+
     @Column(name = "answer")
     private String answer;
 
@@ -61,5 +65,13 @@ public class Question {
 
     public void setMarks(int marks) {
         this.marks = marks;
+    }
+
+    public QuestionList getList() {
+        return list;
+    }
+
+    public void setList(QuestionList list) {
+        this.list = list;
     }
 }
