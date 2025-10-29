@@ -29,7 +29,16 @@ public class QuestionController {
 
     @PutMapping(path = "/questions/{id}")
     public ResponseEntity<QuestionResponseDto> updateQuestionById(@PathVariable long id,@RequestBody QuestionRequestDto dto){
-        Question question = service.updateQuestion(id, service.mapToQuestion(dto));
+        Question question = service.updateQuestionById(id, service.mapToQuestion(dto));
         return new ResponseEntity<>(service.mapToDto(question),HttpStatus.OK);
+    }
+
+    @DeleteMapping(path = "/questions/{id}")
+    public ResponseEntity<HttpStatus> deleteQuestionById(@PathVariable long id){
+        if(service.deleteQuestionById(id)){
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else{
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }
