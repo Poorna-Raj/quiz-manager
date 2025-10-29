@@ -24,6 +24,12 @@ public class QuestionListController {
         return new ResponseEntity<>(service.mapToDto(newList), HttpStatus.CREATED);
     }
 
+    @GetMapping(path = "{id}")
+    public ResponseEntity<QuestionListResponseDto> getQuestionListById(@PathVariable long id){
+        QuestionList list = service.getQuestionListById(id);
+        return new ResponseEntity<>(service.mapToDto(list),HttpStatus.OK);
+    }
+
     @GetMapping
     public ResponseEntity<List<QuestionListResponseDto>> getAllQuestionLists(){
         List<QuestionList> list = service.getAllQuestions();
@@ -34,5 +40,26 @@ public class QuestionListController {
         }
 
         return new ResponseEntity<>(responseDto,HttpStatus.OK);
+    }
+
+    @PutMapping(path = "{id}")
+    public ResponseEntity<QuestionListResponseDto> updateById(@PathVariable long id,@RequestBody QuestionListRequestDto dto){
+        QuestionList newList = service.updateQuestionList(id, service.mapToModel(dto));
+        return new ResponseEntity<>(service.mapToDto(newList),HttpStatus.OK);
+    }
+
+    @DeleteMapping(path = "{id}")
+    public ResponseEntity<HttpStatus> deleteById(@PathVariable long id){
+        if(service.deleteById(id)){
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @DeleteMapping(path ="{id}/questions")
+    public ResponseEntity<QuestionListResponseDto> deleteQuestionOnAListById(@PathVariable long id){
+        QuestionList updatedList = service.clearAllQuestionsById(id);
+        return new ResponseEntity<>(service.mapToDto(updatedList),HttpStatus.OK);
     }
 }
