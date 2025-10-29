@@ -57,7 +57,7 @@ public class QuestionService {
         return question.get();
     }
 
-    public Question updateQuestion(long id,Question editedQuestion){
+    public Question updateQuestionById(long id, Question editedQuestion){
         Optional<Question> question = questionRepository.findById(id);
 
         if(question.isEmpty()){
@@ -97,6 +97,17 @@ public class QuestionService {
         return questionRepository.save(question.get());
     }
 
+    public boolean deleteQuestionById(long id){
+        Optional<Question> question = questionRepository.findById(id);
+
+        if(question.isEmpty()){
+            throw new QuestionNotFound("Invalid question for the given ID of " + id);
+        }
+
+        questionRepository.deleteById(id);
+        return true;
+    }
+
     public Question mapToQuestion(QuestionRequestDto dto){
         Question question = new Question();
         question.setQuestion(dto.getQuestion());
@@ -132,9 +143,11 @@ public class QuestionService {
     public boolean checkAnswerInTheOptions(Question question){
         for(Option option:question.getOptions()){
             if(option.getOption_text().equalsIgnoreCase(question.getAnswer())){
-                return true;
+                return false;
             }
         }
-        return false;
+        return true;
     }
+
+    //TODO::add get all question method with pagination
 }
