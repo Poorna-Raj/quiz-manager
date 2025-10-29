@@ -3,9 +3,18 @@ package com.quiz_app.question_resource.data;
 import java.util.List;
 
 public class QuestionResponseDto {
+    private long id;
     private String question;
     private List<String> options;
     private int marks;
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
 
     public String getQuestion() {
         return question;
