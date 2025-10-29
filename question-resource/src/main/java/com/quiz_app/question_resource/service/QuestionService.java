@@ -17,6 +17,9 @@ public class QuestionService {
     @Autowired
     QuestionRepository questionRepository;
 
+    @Autowired
+    QuestionListRepository listRepository;
+
     public Question createQuestion(Question question){
         if(question.getQuestion() == null || question.getQuestion().trim().isEmpty()){
             throw new BadRequestException("Question cannot be empty");
@@ -120,7 +123,11 @@ public class QuestionService {
                 })
                 .toList();
         question.setOptions(options);
-
+        Optional<QuestionList> list = listRepository.findById(dto.getListId());
+        if(list.isEmpty()){
+            throw new QuestionNotFound("Invalid Question List");
+        }
+        question.setList(listRepository.getReferenceById(dto.getListId()));
         return question;
     }
 
@@ -135,6 +142,7 @@ public class QuestionService {
                 .collect(Collectors.toList());
 
         dto.setOptions(optionTexts);
+        dto.setListId(question.getList().getId());
 
         return dto;
     }
