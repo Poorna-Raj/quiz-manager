@@ -1,119 +1,122 @@
 @startuml
-'https://plantuml.com/class-diagram
 
-' ===== Actors =====
-class User {
-    # userId : Long
-    # username : String
-    # password : String
-    # age : int
-    + login(username : String, password : String) : boolean
-    + register(user : User) : User
-}
-
-class Manager {
-    - quizList : List<Quiz>
-    - questionLists : List<QuestionList>
-
-    + createQuiz(list : QuestionList) : Quiz
-    + updateQuiz(quizId : Long, quiz : Quiz) : Quiz
-    + deleteQuiz(quizId : Long) : void
-    + viewQuiz(quizId : Long) : Quiz
-
-    + createQuestionList(list : QuestionList) : QuestionList
-    + updateQuestionList(listId : Long, list : QuestionList) : QuestionList
-    + deleteQuestionList(listId : Long, listId : Long) : void
-    + viewQuestionList(listId : Long) : QuestionList
-
-    + createQuestion(listId : Long, type : String, data : Map) : Question
-    + importQuestions(file : String) : QuestionList
-}
-
-User <|-- Manager
-
-class Student {
-    - enrolledQuizzes : List<Quiz>
-    + takeQuiz(quizId : Long, answers : List<String>) : int
-    + viewResults(quizId : Long) : int
-}
-
-User <|-- Student
-
-' ===== Question hierarchy =====
-abstract class Question {
-    - text : String
+class Question{
+    - id : long
+    - question : String
+    - answer : String
     - marks : int
-    + display() : void
 }
 
-class MCQQuestion {
+class Option{
+    - id : long
+    - option_text : String
+}
+
+Option "1..*" --* "1" Question : has
+
+interface JpaRepository{
+}
+
+interface QuestionRepository{
+}
+interface OptionRepository{
+}
+
+JpaRepository <|-- QuestionRepository
+JpaRepository <|-- OptionRepository
+
+class QuestionService{
+    + createQuestion(question : Question) : Question
+    + getQuestionById(long id) : Question
+    + updateQuestionById(id : long, editedQuestion : Question) : Question
+    + deleteQuestionById(id : long) : boolean
+    + mapToQuestion(dto : QuestionRequestDto) : Question
+    + mapToDto(question : Question) : QuestionResponseDto
+    + checkAnswerInTheOptions(question : Question) : boolean
+}
+
+class QuestionResponseDto{
+    - id : long
+    - question : String
     - options : List<String>
-    - correctOption : int
-    + display() : void
+    - marks : int
 }
 
-class TrueFalseQuestion {
-    - correctAnswer : boolean
-    + display() : void
+class QuestionRequestDto{
+    - question : String
+    - options : List<String>
+    - answer : String
+    - marks : int
 }
 
-Question <|-- MCQQuestion
-Question <|-- TrueFalseQuestion
+QuestionService --> QuestionRepository : uses
+QuestionService ..> Question : uses
+QuestionService ..> QuestionRequestDto : uses
+QuestionService ..> QuestionResponseDto : uses
 
-' ===== Question Factory =====
-class QuestionFactory {
-    + createQuestion(type : String, data : Map) : Question
+class QuestionController{
+    + createQuestion(dto : QuestionRequestDto) : ResponseEntity<QuestionResponseDto>
+    + getQuestionById(id : long) : ResponseEntity<QuestionResponseDto>
+    + updateQuestionById(id : long,dto : QuestionRequestDto) : ResponseEntity<QuestionResponseDto>
+    + deleteQuestionById(id : long) : ResponseEntity<HttpStatus>
 }
 
-Manager --> QuestionFactory : uses >
-QuestionFactory --> Question : creates >
+QuestionController --> QuestionService : uses
+QuestionController ..> QuestionResponseDto : uses
+QuestionController ..> QuestionRequestDto : uses
 
-' ===== QuestionList =====
-class QuestionList {
-    - questions : List<Question>
-    + addQuestion(q : Question) : void
-    + removeQuestion(qId : Long) : void
-    + getQuestion(qId : Long) : Question
-    + getQuestions() : List<Question>
+class User{
+    - id : long
+    - username : String
+    - password : String
+    - age : int
 }
 
-QuestionList "1" *-- "0..*" Question : contains >
-Manager "1" --> "0..*" QuestionList : manages >
-Manager "1" --> "0..*" Quiz : manages >
-
-' ===== CSV Parser =====
-class CSVParser {
-    + parse(filePath : String) : List<Map>
+interface UserRepository{
 }
 
-Manager --> CSVParser : uses >  ' simple CSV import
+UserRepository --|> JpaRepository
 
-' ===== Strategy Pattern (Scoring) =====
-interface ScoringStrategy {
-    + calculateScore(correct : boolean) : int
+class UserService{
+    + createUser(user : User) : User
+    + updateUser(id : long, user : User) : User
+    + getUserByUsername(username : String) : User
+    + getUserById(id : long) : User
+    + deleteUserById(id : long) : boolean
+    + mapToDto(user : User) : UserResponseDto
+    + mapToUser(dto : UserRequestDto) : User
 }
 
-class NormalScoring {
-    + calculateScore(correct : boolean) : int
+UserService ..> User : uses
+
+class UserResponseDto{
+    - id : long
+    - username : String
+    - age : int
 }
 
-class NegativeScoring {
-    - penalty : int
-    + calculateScore(correct : boolean) : int
+class UserRequestDto{
+    - username : String
+    - password : String
+    - age : int
 }
 
-ScoringStrategy <|.. NormalScoring
-ScoringStrategy <|.. NegativeScoring
-
-' ===== Quiz =====
-class Quiz {
-    - questionList : QuestionList
-    - scoringStrategy : ScoringStrategy
-    + setScoringStrategy(strategy : ScoringStrategy) : void
-    + evaluateAnswers(answers : List<String>) : int
+class UserLoginDto{
+    - username : String
+    - password : String
 }
 
-Quiz --> ScoringStrategy : uses >
-Quiz --> QuestionList : uses >
+UserService --> UserRepository : uses
+UserService ..> UserResponseDto : uses
+UserService ..> UserRequestDto : uses
 
+class UserController{
+    + login(user : UserLoginDto) : ResponseEntity<UserResponseDto>
+    + register(user : UserRequestDto) : ResponseEntity<UserResponseDto>
+}
+
+UserController --> UserService : uses
+UserController ..> UserResponseDto : uses
+UserController ..> UserRequestDto : uses
+UserController ..> UserLoginDto : uses
 @enduml
