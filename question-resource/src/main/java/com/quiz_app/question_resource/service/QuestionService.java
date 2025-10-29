@@ -36,6 +36,10 @@ public class QuestionService {
             throw new BadRequestException("Marks cannot be empty");
         }
 
+        if(checkAnswerInTheOptions(question)){
+            throw new BadRequestException("Answer of the question doesn't match to its options");
+        }
+
         for(Option option:question.getOptions()){
             option.setQuestion(question);
         }
@@ -51,6 +55,46 @@ public class QuestionService {
         }
 
         return question.get();
+    }
+
+    public Question updateQuestion(long id,Question editedQuestion){
+        Optional<Question> question = questionRepository.findById(id);
+
+        if(question.isEmpty()){
+            throw new QuestionNotFound("Invalid question for the ID of " + id);
+        }
+
+        if(!StringUtils.hasText(editedQuestion.getQuestion())){
+            throw new BadRequestException("Question cannot be empty");
+        }
+
+        if(editedQuestion.getOptions() == null || editedQuestion.getOptions().isEmpty()){
+            throw new BadRequestException("At least one option is required");
+        }
+
+        if(!StringUtils.hasText(editedQuestion.getAnswer())){
+            throw new BadRequestException("Answer cannot be empty");
+        }
+
+        if(editedQuestion.getMarks() <= 0){
+            throw new BadRequestException("Marks cannot be empty");
+        }
+
+        if(checkAnswerInTheOptions(editedQuestion)){
+            throw new BadRequestException("Answer of the question doesn't match to its options");
+        }
+
+        question.get().setMarks(editedQuestion.getMarks());
+        question.get().setAnswer(editedQuestion.getAnswer());
+        question.get().setQuestion(editedQuestion.getQuestion());
+
+        question.get().getOptions().clear();
+        for(Option newOption: editedQuestion.getOptions()){
+            newOption.setQuestion(question.get());
+            question.get().getOptions().add(newOption);
+        }
+
+        return questionRepository.save(question.get());
     }
 
     public Question mapToQuestion(QuestionRequestDto dto){
@@ -83,5 +127,14 @@ public class QuestionService {
         dto.setOptions(optionTexts);
 
         return dto;
+    }
+
+    public boolean checkAnswerInTheOptions(Question question){
+        for(Option option:question.getOptions()){
+            if(option.getOption_text().equalsIgnoreCase(question.getAnswer())){
+                return true;
+            }
+        }
+        return false;
     }
 }
