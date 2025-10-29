@@ -7,13 +7,7 @@ public class QuestionRequestDto {
     private List<String> options;
     private String answer;
     private int marks;
-
-    public QuestionRequestDto(String question, List<String> options, String answer, int marks) {
-        this.question = question;
-        this.options = options;
-        this.answer = answer;
-        this.marks = marks;
-    }
+    private long listId;
 
     public String getQuestion() {
         return question;
@@ -45,5 +39,13 @@ public class QuestionRequestDto {
 
     public void setMarks(int marks) {
         this.marks = marks;
+    }
+
+    public long getListId() {
+        return listId;
+    }
+
+    public void setListId(long listId) {
+        this.listId = listId;
     }
 }
