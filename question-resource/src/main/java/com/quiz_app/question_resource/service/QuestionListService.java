@@ -5,6 +5,7 @@ import com.quiz_app.question_resource.exception.BadRequestException;
 import com.quiz_app.question_resource.exception.QuestionNotFound;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,6 +50,29 @@ public class QuestionListService {
     public List<QuestionList> getAllQuestions(){
         return repository.findAll();
     }
+
+    public boolean deleteById(Long id){
+        if(!repository.existsById(id)){
+            throw new QuestionNotFound("Invalid question list for given ID!");
+        }
+
+        repository.deleteById(id);
+        return true;
+    }
+
+    @Transactional
+    public QuestionList clearAllQuestionsById(long id){
+        QuestionList list = repository.findById(id)
+                .orElseThrow(() -> new BadRequestException("Invalid question list for given ID"));
+        list.getQuestions().clear();
+        return repository.save(list);
+    }
+
+    public QuestionList getQuestionListById(long id){
+        return repository.findById(id)
+                .orElseThrow(() -> new BadRequestException("Invalid question list for given ID"));
+    }
+
 
     public QuestionList mapToModel(QuestionListRequestDto list) {
         QuestionList newList = new QuestionList();
