@@ -94,6 +94,7 @@ public class QuestionService {
             newOption.setQuestion(question.get());
             question.get().getOptions().add(newOption);
         }
+        question.get().setList(editedQuestion.getList());
 
         return questionRepository.save(question.get());
     }
