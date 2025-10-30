@@ -2,7 +2,7 @@ package com.quiz_app.question_resource.service;
 
 import com.quiz_app.question_resource.data.*;
 import com.quiz_app.question_resource.exception.BadRequestException;
-import com.quiz_app.question_resource.exception.QuestionNotFound;
+import com.quiz_app.question_resource.exception.ContentNotFound;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,7 +28,7 @@ public class QuestionListService {
         Optional<QuestionList> existingList = repository.findById(id);
 
         if(existingList.isEmpty()){
-            throw new QuestionNotFound("Invalid question list for given ID");
+            throw new ContentNotFound("Invalid question list for given ID");
         }
 
         if(newList.getName().isEmpty()||newList.getTopic().isEmpty()){
@@ -53,7 +53,7 @@ public class QuestionListService {
 
     public boolean deleteById(Long id){
         if(!repository.existsById(id)){
-            throw new QuestionNotFound("Invalid question list for given ID!");
+            throw new ContentNotFound("Invalid question list for given ID!");
         }
 
         repository.deleteById(id);

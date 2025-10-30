@@ -20,8 +20,8 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error,HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(QuestionNotFound.class)
-    public ResponseEntity<ApiError> handleQuestionNotFound(QuestionNotFound ex, WebRequest req){
+    @ExceptionHandler(ContentNotFound.class)
+    public ResponseEntity<ApiError> handleQuestionNotFound(ContentNotFound ex, WebRequest req){
         ApiError error = new ApiError(
                 HttpStatus.NOT_FOUND.value(),
                 HttpStatus.NOT_FOUND.getReasonPhrase(),
