@@ -2,7 +2,7 @@ package com.quiz_app.question_resource.service;
 
 import com.quiz_app.question_resource.data.*;
 import com.quiz_app.question_resource.exception.BadRequestException;
-import com.quiz_app.question_resource.exception.QuestionNotFound;
+import com.quiz_app.question_resource.exception.ContentNotFound;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -16,6 +16,9 @@ public class QuestionService {
 
     @Autowired
     QuestionRepository questionRepository;
+
+    @Autowired
+    QuestionListRepository listRepository;
 
     public Question createQuestion(Question question){
         if(question.getQuestion() == null || question.getQuestion().trim().isEmpty()){
@@ -49,7 +52,7 @@ public class QuestionService {
         Optional<Question> question = questionRepository.findById(id);
 
         if(question.isEmpty()){
-            throw new QuestionNotFound("Invalid question for the ID of " + id);
+            throw new ContentNotFound("Invalid question for the ID of " + id);
         }
 
         return question.get();
@@ -59,7 +62,7 @@ public class QuestionService {
         Optional<Question> question = questionRepository.findById(id);
 
         if(question.isEmpty()){
-            throw new QuestionNotFound("Invalid question for the ID of " + id);
+            throw new ContentNotFound("Invalid question for the ID of " + id);
         }
 
         if(!StringUtils.hasText(editedQuestion.getQuestion())){
@@ -91,6 +94,7 @@ public class QuestionService {
             newOption.setQuestion(question.get());
             question.get().getOptions().add(newOption);
         }
+        question.get().setList(editedQuestion.getList());
 
         return questionRepository.save(question.get());
     }
@@ -99,7 +103,7 @@ public class QuestionService {
         Optional<Question> question = questionRepository.findById(id);
 
         if(question.isEmpty()){
-            throw new QuestionNotFound("Invalid question for the given ID of " + id);
+            throw new ContentNotFound("Invalid question for the given ID of " + id);
         }
 
         questionRepository.deleteById(id);
@@ -120,7 +124,11 @@ public class QuestionService {
                 })
                 .toList();
         question.setOptions(options);
-
+        Optional<QuestionList> list = listRepository.findById(dto.getListId());
+        if(list.isEmpty()){
+            throw new ContentNotFound("Invalid Question List");
+        }
+        question.setList(listRepository.getReferenceById(dto.getListId()));
         return question;
     }
 
@@ -135,6 +143,7 @@ public class QuestionService {
                 .collect(Collectors.toList());
 
         dto.setOptions(optionTexts);
+        dto.setListId(question.getList().getId());
 
         return dto;
     }

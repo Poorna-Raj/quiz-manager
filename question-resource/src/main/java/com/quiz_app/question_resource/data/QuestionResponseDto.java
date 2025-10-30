@@ -7,6 +7,7 @@ public class QuestionResponseDto {
     private String question;
     private List<String> options;
     private int marks;
+    private long listId;
 
     public long getId() {
         return id;
@@ -38,5 +39,13 @@ public class QuestionResponseDto {
 
     public void setMarks(int marks) {
         this.marks = marks;
+    }
+
+    public long getListId() {
+        return listId;
+    }
+
+    public void setListId(long listId) {
+        this.listId = listId;
     }
 }
