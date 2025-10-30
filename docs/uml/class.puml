@@ -19,11 +19,8 @@ interface JpaRepository{
 
 interface QuestionRepository{
 }
-interface OptionRepository{
-}
 
 JpaRepository <|-- QuestionRepository
-JpaRepository <|-- OptionRepository
 
 class QuestionService{
     + createQuestion(question : Question) : Question
@@ -119,4 +116,60 @@ UserController --> UserService : uses
 UserController ..> UserResponseDto : uses
 UserController ..> UserRequestDto : uses
 UserController ..> UserLoginDto : uses
+
+class QuestionList{
+    - id : long
+    - topic : String
+    - name : String
+}
+
+QuestionList "1" --* "0..*" Question : belongs to
+
+interface QuestionListRepository{
+}
+
+QuestionListRepository --|> JpaRepository
+
+class QuestionListRequestDto{
+    - topic : String
+    - name : String
+}
+
+class QuestionListResponseDto{
+    - id : long
+    - topic : String
+    - name : String
+    - questions_id : List<Long>
+}
+
+class QuestionListService{
+    + createQuestionList(list : QuestionList) : QuestionList
+    + updateQuestionList(id : long, list : QuestionList) : QuestionList
+    + getAllQuestionList() : List<QuestionList>
+    + deleteById(id : long) : boolean
+    + clearAllQuestionsById(id : long) : QuestionList
+    + getQuestionListById(id : long) : QuestionList
+    + mapToModel(list : QuestionListRequestDto) : QuestionList
+    + mapToDto(list : QuestionList) : QuestionListResponseDto
+}
+
+QuestionListService --> QuestionListRepository : uses
+QuestionListService ..> QuestionList : uses
+QuestionListService ..> QuestionListResponseDto : uses
+QuestionListService ..> QuestionListRequestDto : uses
+
+class QuestionListController{
+    + createQuestionList(list : QuestionListRequestDto) : ResponseEntity<QuestionListResponseDto>
+    + getQuestionListById(id : long) : ResponseEntity<QuestionListResponseDto>
+    + getAllQuestionLists() : ResponseEntity<List<QuestionListResponseDto>>
+    + updateById(id : long ,dto : QuestionListRequestDto) : ResponseEntity<QuestionListResponseDto>
+    + deleteById(id : long) : ResponseEntity<HttpStatus>
+    + deleteQuestionOnAListById(id : long) : ResponseEntity<QuestionListResponseDto>
+}
+
+QuestionListController --> QuestionListService : uses
+QuestionListController ..> QuestionList : uses
+QuestionListController ..> QuestionListRequestDto : uses
+QuestionListController ..> QuestionListResponseDto : uses
+
 @enduml
