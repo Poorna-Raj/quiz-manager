@@ -7,9 +7,7 @@ import com.quiz_app.quiz_resource.service.QuizService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class QuizController {
@@ -21,5 +19,12 @@ public class QuizController {
         Quiz quiz = service.mapToQuizModel(dto);
         Quiz createdQuiz = service.createQuiz(quiz);
         return new ResponseEntity<>(service.mapToQuizDto(createdQuiz), HttpStatus.CREATED);
+    }
+
+    @PutMapping("/quizzes/{id}")
+    public ResponseEntity<QuizResponseDto> updateQuiz(@RequestBody QuizRequestDto dto, @PathVariable long id){
+        Quiz quiz = service.mapToQuizModel(dto);
+        Quiz updatedQuiz = service.updateQuiz(id,quiz);
+        return new ResponseEntity<>(service.mapToQuizDto(updatedQuiz),HttpStatus.OK);
     }
 }
