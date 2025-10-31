@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 public class QuizController {
     @Autowired
@@ -35,5 +37,21 @@ public class QuizController {
         } else{
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @GetMapping("quizzes/{id}")
+    public ResponseEntity<QuizResponseDto> getQuizById(@PathVariable long id){
+        return new ResponseEntity<>(service.mapToQuizDto(service.getQuizById(id)),HttpStatus.OK);
+    }
+
+    @GetMapping("quizzes/")
+    public ResponseEntity<List<QuizResponseDto>> getAllQuizzes(){
+        List<QuizResponseDto> quizList = service.getAllQuiz()
+                .stream()
+                .map(quiz -> {
+                    return service.mapToQuizDto(quiz);
+                })
+                .toList();
+        return new ResponseEntity<>(quizList,HttpStatus.OK);
     }
 }

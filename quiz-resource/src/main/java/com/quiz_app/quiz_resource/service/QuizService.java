@@ -76,6 +76,15 @@ public class QuizService {
         return true;
     }
 
+    public Quiz getQuizById(long id){
+        return repository.findById(id)
+                .orElseThrow(()->new ContentNotFound("Invalid Quiz for the given ID"));
+    }
+
+    public List<Quiz> getAllQuiz(){
+        return repository.findAll();
+    }
+
     public Quiz mapToQuizModel(QuizRequestDto dto){
         Quiz newQuiz = new Quiz();
         newQuiz.setQuestionListId(dto.getQuestionListId());
