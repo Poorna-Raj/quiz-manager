@@ -15,6 +15,8 @@ public class Quiz {
     private long id;
     @Column(name = "question_list_id")
     private long questionListId;
+    @Column(name = "quiz_name", unique = true)
+    private String name;
     @Column(name = "question_count")
     private int questionCount;
     @Column(name = "created_by")
@@ -83,5 +85,13 @@ public class Quiz {
 
     public void setQuestionCount(int questionCount) {
         this.questionCount = questionCount;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

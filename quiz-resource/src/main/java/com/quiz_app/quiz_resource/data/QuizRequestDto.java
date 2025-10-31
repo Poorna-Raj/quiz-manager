@@ -4,6 +4,7 @@ public class QuizRequestDto {
     private long questionListId;
     private int questionCount;
     private String createdBy;
+    private String name;
 
     public long getQuestionListId() {
         return questionListId;
@@ -27,5 +28,13 @@ public class QuizRequestDto {
 
     public void setCreatedBy(String createdBy) {
         this.createdBy = createdBy;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

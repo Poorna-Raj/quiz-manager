@@ -11,6 +11,7 @@ public class QuizResponseDto {
     private LocalDateTime createdAt;
     private List<QuizQuestionResponseDto> questions;
     private String status;
+    private String name;
 
     public long getId() {
         return id;
@@ -66,5 +67,13 @@ public class QuizResponseDto {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

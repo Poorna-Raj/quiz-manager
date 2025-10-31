@@ -5,7 +5,6 @@ import com.quiz_app.quiz_resource.exception.ContentNotFound;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -55,6 +54,7 @@ public class QuizService {
         newQuiz.setQuestionListId(dto.getQuestionListId());
         newQuiz.setQuestionCount(dto.getQuestionCount());
         newQuiz.setCreatedBy(dto.getCreatedBy());
+        newQuiz.setName(dto.getName());
 
         return newQuiz;
     }
@@ -72,6 +72,7 @@ public class QuizService {
         responseDto.setQuestionCount(createdQuiz.getQuestionCount());
         responseDto.setCreatedAt(createdQuiz.getCreatedAt());
         responseDto.setQuestionListId(createdQuiz.getQuestionListId());
+        responseDto.setName(createdQuiz.getName());
         return responseDto;
     }
 
