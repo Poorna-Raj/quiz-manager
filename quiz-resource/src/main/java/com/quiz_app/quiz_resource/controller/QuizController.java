@@ -22,9 +22,18 @@ public class QuizController {
     }
 
     @PutMapping("/quizzes/{id}")
-    public ResponseEntity<QuizResponseDto> updateQuiz(@RequestBody QuizRequestDto dto, @PathVariable long id){
+    public ResponseEntity<QuizResponseDto> updateQuizById(@RequestBody QuizRequestDto dto, @PathVariable long id){
         Quiz quiz = service.mapToQuizModel(dto);
         Quiz updatedQuiz = service.updateQuiz(id,quiz);
         return new ResponseEntity<>(service.mapToQuizDto(updatedQuiz),HttpStatus.OK);
+    }
+
+    @DeleteMapping("quizzes/{id}")
+    public ResponseEntity<HttpStatus> deleteQuizById(@PathVariable long id){
+        if(service.deleteQuiz(id)){
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else{
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

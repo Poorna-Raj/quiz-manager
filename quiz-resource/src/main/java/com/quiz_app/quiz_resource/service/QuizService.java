@@ -68,6 +68,14 @@ public class QuizService {
         return repository.save(existingQuiz);
     }
 
+    public boolean deleteQuiz(long id){
+        Quiz quiz = repository.findById(id)
+                .orElseThrow(()->new ContentNotFound("Invalid Quiz for the given ID!"));
+
+        repository.delete(quiz);
+        return true;
+    }
+
     public Quiz mapToQuizModel(QuizRequestDto dto){
         Quiz newQuiz = new Quiz();
         newQuiz.setQuestionListId(dto.getQuestionListId());
