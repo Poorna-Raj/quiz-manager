@@ -11,8 +11,6 @@ public class QuizQuestion {
     private long id;
     @Column(name = "question_id")
     private long questionId;
-    @Column(name = "question")
-    private String questionText;
 
     public long getId() {
         return id;
@@ -28,13 +26,5 @@ public class QuizQuestion {
 
     public void setQuestionId(long questionId) {
         this.questionId = questionId;
-    }
-
-    public String getQuestionText() {
-        return questionText;
-    }
-
-    public void setQuestionText(String questionText) {
-        this.questionText = questionText;
     }
 }
