@@ -1,6 +1,7 @@
 package com.quiz_app.quiz_resource.service;
 
 import com.quiz_app.quiz_resource.data.*;
+import com.quiz_app.quiz_resource.exception.BadRequest;
 import com.quiz_app.quiz_resource.exception.ContentNotFound;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -49,6 +50,24 @@ public class QuizService {
         return repository.save(newQuiz);
     }
 
+    public Quiz updateQuiz(long id,Quiz quiz){
+        Quiz existingQuiz = repository.findById(id)
+                .orElseThrow(() -> new ContentNotFound("Invalid Quiz for given ID!"));
+
+        if(existingQuiz.getQuestionListId() != quiz.getQuestionListId() && !isQuestionListValid(quiz.getQuestionListId())){
+            throw new BadRequest("Invalid question list");
+        }
+
+        existingQuiz.setName(quiz.getName());
+        existingQuiz.setStatus(quiz.getStatus());
+        existingQuiz.setQuestions(quiz.getQuestions());
+        existingQuiz.setQuestionCount(quiz.getQuestionCount());
+        existingQuiz.setCreatedBy(quiz.getCreatedBy());
+        existingQuiz.setQuestionListId(quiz.getQuestionListId());
+
+        return repository.save(existingQuiz);
+    }
+
     public Quiz mapToQuizModel(QuizRequestDto dto){
         Quiz newQuiz = new Quiz();
         newQuiz.setQuestionListId(dto.getQuestionListId());
@@ -81,5 +100,15 @@ public class QuizService {
         responseDto.setId(question.getId());
         responseDto.setQuestionId(question.getQuestionId());
         return responseDto;
+    }
+
+    public boolean isQuestionListValid(long questionListId){
+        QuestionListDto questionList = client.getQuestionListById(questionListId);
+
+        if(questionList == null||questionList.getQuestions_id().isEmpty()||questionList.getQuestions_id() == null){
+            throw new ContentNotFound("Invalid question list for given ID");
+        }
+
+        return true;
     }
 }
