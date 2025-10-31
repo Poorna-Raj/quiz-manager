@@ -1,18 +1,9 @@
 package com.quiz_app.quiz_resource.data;
 
 public class QuizRequestDto {
-    private long id;
     private long questionListId;
     private int questionCount;
     private String createdBy;
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
 
     public long getQuestionListId() {
         return questionListId;
