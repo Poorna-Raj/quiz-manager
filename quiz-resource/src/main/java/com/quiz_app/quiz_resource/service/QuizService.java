@@ -22,7 +22,7 @@ public class QuizService {
     public Quiz createQuiz(Quiz quiz){
         Quiz newQuiz = new Quiz();
         newQuiz.setCreatedBy(quiz.getCreatedBy());
-        newQuiz.setQuestions(generateQuizQuestions(quiz.getQuestionListId(), quiz.getQuestionCount()));
+        newQuiz.setQuestions(generateQuizQuestions(newQuiz,quiz.getQuestionListId(), quiz.getQuestionCount()));
         newQuiz.setStatus(quiz.getStatus());
         if(quiz.getQuestionCount() <= 0){
             throw new BadRequest("At least one question should be in the quiz");
@@ -41,13 +41,15 @@ public class QuizService {
             throw new BadRequest("At least one question should be in the quiz");
         }
         if (existingQuiz.getQuestionListId() != quiz.getQuestionListId()) {
-            List<QuizQuestion> newQuestions = generateQuizQuestions(quiz.getQuestionListId(), quiz.getQuestionCount());
+            List<QuizQuestion> newQuestions = generateQuizQuestions(existingQuiz,quiz.getQuestionListId(), quiz.getQuestionCount());
             existingQuiz.getQuestions().clear();
+            newQuestions.forEach(q -> q.setQuiz(existingQuiz));
             existingQuiz.getQuestions().addAll(newQuestions);
         } else {
             if(existingQuiz.getQuestionCount() != quiz.getQuestionCount()){
-                List<QuizQuestion> newQuestions = generateQuizQuestions(quiz.getQuestionListId(), quiz.getQuestionCount());
+                List<QuizQuestion> newQuestions = generateQuizQuestions(existingQuiz,quiz.getQuestionListId(), quiz.getQuestionCount());
                 existingQuiz.getQuestions().clear();
+                newQuestions.forEach(q -> q.setQuiz(existingQuiz));
                 existingQuiz.getQuestions().addAll(newQuestions);
             } else {
                 existingQuiz.getQuestions().clear();
@@ -117,7 +119,7 @@ public class QuizService {
         return responseDto;
     }
 
-    public List<QuizQuestion> generateQuizQuestions(long questionListId,int count){
+    public List<QuizQuestion> generateQuizQuestions(Quiz quiz,long questionListId,int count){
         QuestionListDto questionList = client.getQuestionListById(questionListId);
 
         if (questionList == null || questionList.getQuestions_id() == null || questionList.getQuestions_id().isEmpty()) {
@@ -136,6 +138,7 @@ public class QuizService {
                 .map(question ->{
                     QuizQuestion newQuestion = new QuizQuestion();
                     newQuestion.setQuestionId(question);
+                    newQuestion.setQuiz(quiz);
                     return newQuestion;
                 })
                 .collect(Collectors.toCollection(ArrayList::new));

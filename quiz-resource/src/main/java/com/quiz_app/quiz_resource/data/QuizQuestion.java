@@ -11,6 +11,9 @@ public class QuizQuestion {
     private long id;
     @Column(name = "question_id")
     private long questionId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "quiz_id")
+    private Quiz quiz;
 
     public long getId() {
         return id;
@@ -26,5 +29,13 @@ public class QuizQuestion {
 
     public void setQuestionId(long questionId) {
         this.questionId = questionId;
+    }
+
+    public Quiz getQuiz() {
+        return quiz;
+    }
+
+    public void setQuiz(Quiz quiz) {
+        this.quiz = quiz;
     }
 }

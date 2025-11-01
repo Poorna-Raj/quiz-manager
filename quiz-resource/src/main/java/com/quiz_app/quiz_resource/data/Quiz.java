@@ -25,7 +25,6 @@ public class Quiz {
     private LocalDateTime createdAt = LocalDateTime.now();
 
     @OneToMany(cascade = CascadeType.ALL,orphanRemoval = true)
-    @JoinColumn(name = "quiz_id")
     private List<QuizQuestion> questions = new ArrayList<>();
 
     @Column(name = "status")
