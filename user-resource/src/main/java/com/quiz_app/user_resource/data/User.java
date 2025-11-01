@@ -1,6 +1,7 @@
 package com.quiz_app.user_resource.data;
 
 
+
 import jakarta.persistence.*;
 
 @Entity

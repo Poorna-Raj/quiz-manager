@@ -15,12 +15,12 @@ public class UserService {
 
     private UserRepository userRepository;
 
-    // ✅ Create or Update User
+    // Create or Update User
     public User saveUser(User user) {
         return userRepository.save(user);
     }
 
-    // ✅ Get all users
+    //Get all users
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
