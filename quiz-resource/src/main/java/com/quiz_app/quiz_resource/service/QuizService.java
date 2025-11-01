@@ -6,8 +6,10 @@ import com.quiz_app.quiz_resource.exception.ContentNotFound;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class QuizService {
@@ -18,34 +20,13 @@ public class QuizService {
     private QuestionServiceClient client;
 
     public Quiz createQuiz(Quiz quiz){
-        QuestionListDto questionList = client.getQuestionListById(quiz.getQuestionListId());
-
-        if(questionList == null||questionList.getQuestions_id().isEmpty()||questionList.getQuestions_id() == null){
-            throw new ContentNotFound("Invalid question list for given ID");
-        }
-
-        //TODO :: check weather the question list have enough questions to create the list
-
-        Collections.shuffle(questionList.getQuestions_id());
-        List<Long> selectedQuestions = questionList.getQuestions_id()
-                .stream()
-                .limit(quiz.getQuestionCount())
-                .toList();
-
-        List<QuizQuestion> quizQuestions = selectedQuestions.stream()
-                .map(question ->{
-                    QuizQuestion newQuestion = new QuizQuestion();
-                    newQuestion.setQuestionId(question);
-                    return newQuestion;
-                })
-                .toList();
-
         Quiz newQuiz = new Quiz();
         newQuiz.setCreatedBy(quiz.getCreatedBy());
-        newQuiz.setQuestions(quizQuestions);
+        newQuiz.setQuestions(generateQuizQuestions(quiz.getQuestionListId(), quiz.getQuestionCount()));
         newQuiz.setStatus(quiz.getStatus());
         newQuiz.setQuestionCount(quiz.getQuestionCount());
         newQuiz.setQuestionListId(quiz.getQuestionListId());
+        newQuiz.setName(quiz.getName());
 
         return repository.save(newQuiz);
     }
@@ -54,13 +35,25 @@ public class QuizService {
         Quiz existingQuiz = repository.findById(id)
                 .orElseThrow(() -> new ContentNotFound("Invalid Quiz for given ID!"));
 
-        if(existingQuiz.getQuestionListId() != quiz.getQuestionListId() && !isQuestionListValid(quiz.getQuestionListId())){
-            throw new BadRequest("Invalid question list");
+        if (existingQuiz.getQuestionListId() != quiz.getQuestionListId()) {
+            List<QuizQuestion> newQuestions = generateQuizQuestions(quiz.getQuestionListId(), quiz.getQuestionCount());
+            existingQuiz.getQuestions().clear();
+            existingQuiz.getQuestions().addAll(newQuestions);
+        } else {
+            if(existingQuiz.getQuestionCount() != quiz.getQuestionCount()){
+                List<QuizQuestion> newQuestions = generateQuizQuestions(quiz.getQuestionListId(), quiz.getQuestionCount());
+                existingQuiz.getQuestions().clear();
+                existingQuiz.getQuestions().addAll(newQuestions);
+            } else {
+                existingQuiz.getQuestions().clear();
+                if (quiz.getQuestions() != null) {
+                    existingQuiz.getQuestions().addAll(quiz.getQuestions());
+                }
+            }
         }
 
         existingQuiz.setName(quiz.getName());
         existingQuiz.setStatus(quiz.getStatus());
-        existingQuiz.setQuestions(quiz.getQuestions());
         existingQuiz.setQuestionCount(quiz.getQuestionCount());
         existingQuiz.setCreatedBy(quiz.getCreatedBy());
         existingQuiz.setQuestionListId(quiz.getQuestionListId());
@@ -119,13 +112,27 @@ public class QuizService {
         return responseDto;
     }
 
-    public boolean isQuestionListValid(long questionListId){
+    public List<QuizQuestion> generateQuizQuestions(long questionListId,int count){
         QuestionListDto questionList = client.getQuestionListById(questionListId);
 
-        if(questionList == null||questionList.getQuestions_id().isEmpty()||questionList.getQuestions_id() == null){
+        if (questionList == null || questionList.getQuestions_id() == null || questionList.getQuestions_id().isEmpty()) {
             throw new ContentNotFound("Invalid question list for given ID");
         }
 
-        return true;
+        //TODO::check if the question list have enough question to make the quiz
+
+        Collections.shuffle(questionList.getQuestions_id());
+        List<Long> selectedQuestions = questionList.getQuestions_id()
+                .stream()
+                .limit(count)
+                .collect(Collectors.toCollection(ArrayList::new));
+
+        return selectedQuestions.stream()
+                .map(question ->{
+                    QuizQuestion newQuestion = new QuizQuestion();
+                    newQuestion.setQuestionId(question);
+                    return newQuestion;
+                })
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 }
