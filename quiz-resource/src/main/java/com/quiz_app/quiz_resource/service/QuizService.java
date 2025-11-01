@@ -24,6 +24,9 @@ public class QuizService {
         newQuiz.setCreatedBy(quiz.getCreatedBy());
         newQuiz.setQuestions(generateQuizQuestions(quiz.getQuestionListId(), quiz.getQuestionCount()));
         newQuiz.setStatus(quiz.getStatus());
+        if(quiz.getQuestionCount() <= 0){
+            throw new BadRequest("At least one question should be in the quiz");
+        }
         newQuiz.setQuestionCount(quiz.getQuestionCount());
         newQuiz.setQuestionListId(quiz.getQuestionListId());
         newQuiz.setName(quiz.getName());
@@ -34,7 +37,9 @@ public class QuizService {
     public Quiz updateQuiz(long id,Quiz quiz){
         Quiz existingQuiz = repository.findById(id)
                 .orElseThrow(() -> new ContentNotFound("Invalid Quiz for given ID!"));
-
+        if(quiz.getQuestionCount() <= 0){
+            throw new BadRequest("At least one question should be in the quiz");
+        }
         if (existingQuiz.getQuestionListId() != quiz.getQuestionListId()) {
             List<QuizQuestion> newQuestions = generateQuizQuestions(quiz.getQuestionListId(), quiz.getQuestionCount());
             existingQuiz.getQuestions().clear();
