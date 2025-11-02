@@ -91,6 +91,8 @@ public class QuizService {
         newQuiz.setQuestionCount(dto.getQuestionCount());
         newQuiz.setCreatedBy(dto.getCreatedBy());
         newQuiz.setName(dto.getName());
+        newQuiz.setType(dto.getType());
+        newQuiz.setDescription(dto.getDescription());
 
         return newQuiz;
     }
@@ -109,6 +111,8 @@ public class QuizService {
         responseDto.setCreatedAt(createdQuiz.getCreatedAt());
         responseDto.setQuestionListId(createdQuiz.getQuestionListId());
         responseDto.setName(createdQuiz.getName());
+        responseDto.setType(createdQuiz.getType());
+        responseDto.setDescription(createdQuiz.getDescription());
         return responseDto;
     }
 
