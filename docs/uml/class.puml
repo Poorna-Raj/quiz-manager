@@ -172,4 +172,111 @@ QuestionListController ..> QuestionList : uses
 QuestionListController ..> QuestionListRequestDto : uses
 QuestionListController ..> QuestionListResponseDto : uses
 
+class Quiz{
+    - id : long
+    - questionListId : long
+    - name : String
+    - questionCount : int
+    - createdBy : String
+    - createdAt : LocalDateTime
+    - questions : List<QuizQuestion>
+    - status : String
+    - description : String
+    - type : String
+}
+
+class QuestionListDto{
+    - id : long
+    - topic : String
+    - name : String
+    - questions_id : List<Long>
+}
+
+class QuizQuestion{
+    - id : long
+    - questionId : long
+    - quiz : Quiz
+}
+
+Quiz *-- QuizQuestion : belongs to
+
+class QuizQuestionRequestDto{
+    - questionId : long
+}
+
+class QuizQuestionResponseDto{
+    - id : long
+    - questionId : long
+}
+
+interface QuizRepository{}
+
+QuizRepository --|> JpaRepository
+
+class QuizRequestDto{
+    - questionListId : long
+    - questionCount : int
+    - createdBy : String
+    - name : String
+    - description : String
+    - type : String
+}
+
+class QuizResponseDto{
+    - id : long
+    - questionListId : long
+    - questionCount : int
+    - createdBy : String
+    - createdAt : LocalDateTime
+    - questions : List<QuizQuestionResponseDto>
+    - status : String
+    - name : String
+    - description : String
+    - type : String
+}
+
+QuizResponseDto ..> QuizQuestionResponseDto : uses
+
+class QuizService{
+    - repository : QuizRepository
+    - client : QuestionServiceClient
+
+    + createQuiz(quiz : Quiz) : Quiz
+    + updateQuiz(id : long, quiz : Quiz) : Quiz
+    + deleteQuiz(id : long) : boolean
+    + getQuizById(id : long) : Quiz
+    + getAllQuiz() : List<Quiz>
+    + mapToQuizModel(dto : QuizRequestDto) : Quiz
+    + mapToQuizDto(createdQuiz : Quiz) : QuizResponseDto
+    + mapToQuizQuestionDto(question : QuizQuestion) : QuizQuestionResponseDto
+    + generateQuizQuestions(quiz : Quiz, questionListId : long, count : int) : List<QuizQuestion>
+}
+
+QuizService ..> Quiz : uses
+QuizService ..> QuizResponseDto : uses
+QuizService ..> QuizRequestDto : uses
+QuizService ..> QuizQuestion : uses
+QuizService ..> QuizQuestionResponseDto : uses
+
+class QuestionServiceClient{
+    + getQuestionListById(questionListId : long) : QuestionListDto
+}
+
+QuizService --> QuestionServiceClient : uses
+
+QuizService --> QuizRepository : uses
+
+class QuizController{
+    - service : QuizService
+
+    + createQuiz(dto : QuizRequestDto) : ResponseEntity<QuizResponseDto>
+    + updateQuizById(dto : QuizRequestDto, id : long) : ResponseEntity<QuizResponseDto>
+    + deleteQuizById(id : long) : ResponseEntity<HttpStatus>
+    + getQuizById(id : long) : ResponseEntity<QuizResponseDto>
+    + getAllQuizzes() : ResponseEntity<List<QuizResponseDto>>
+}
+
+QuizController --> QuizService : uses
+QuizController ..> QuizRequestDto : uses
+QuizController ..> QuizResponseDto : uses
 @enduml
