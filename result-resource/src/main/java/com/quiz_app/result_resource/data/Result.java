@@ -3,6 +3,8 @@ package com.quiz_app.result_resource.data;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "tbl_result")
@@ -13,9 +15,8 @@ public class Result {
     private long id;
     @Column(name = "quiz_id")
     private long quizId;
-    @Lob
-    @Column(name = "answers",columnDefinition = "TEXT")
-    private String answers;
+    @OneToMany(cascade = CascadeType.ALL,orphanRemoval = true)
+    private List<ResultQuestion> answers = new ArrayList<>();
     @Column(name = "score")
     private double score;
     @Column(name = "submitted_at")
@@ -37,12 +38,16 @@ public class Result {
         this.quizId = quizId;
     }
 
-    public String getAnswers() {
+    public List<ResultQuestion> getAnswers() {
         return answers;
     }
 
-    public void setAnswers(String answers) {
+    public void setAnswers(List<ResultQuestion> answers) {
         this.answers = answers;
+    }
+
+    public void setSubmittedAt(LocalDateTime submittedAt) {
+        this.submittedAt = submittedAt;
     }
 
     public double getScore() {
