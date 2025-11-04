@@ -24,4 +24,16 @@ public class ResultService {
         result.setAnswers(fetchedQuestionList);
         return result;
     }
+
+    public Result calculateTheScore (Result result){
+        double score = 0;
+        for(ResultQuestion question: result.getAnswers()){
+            if(question.getAnswer().equalsIgnoreCase(question.getCorrectAnswer())){
+                score ++;
+            }
+        }
+
+        result.setScore(score);
+        return result;
+    }
 }
