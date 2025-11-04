@@ -1,11 +1,12 @@
 package com.quiz_app.result_resource.data;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class ResultResponseDto {
     private long id;
     private long quizId;
-    private String answers;
+    private List<ResultQuestionResponseDto> answers;
     private double score;
     private LocalDateTime submittedAt;
 
@@ -25,11 +26,11 @@ public class ResultResponseDto {
         this.quizId = quizId;
     }
 
-    public String getAnswers() {
+    public List<ResultQuestionResponseDto> getAnswers() {
         return answers;
     }
 
-    public void setAnswers(String answers) {
+    public void setAnswers(List<ResultQuestionResponseDto> answers) {
         this.answers = answers;
     }
 
