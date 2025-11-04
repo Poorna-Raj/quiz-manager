@@ -36,4 +36,8 @@ public class ResultService {
         result.setScore(score);
         return result;
     }
+
+    public Result saveResult(Result result){
+        return repository.save(calculateTheScore(populateCorrectAnswers(result)));
+    }
 }
