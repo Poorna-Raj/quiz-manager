@@ -1,8 +1,6 @@
 package com.quiz_app.result_resource.service;
 
-import com.quiz_app.result_resource.data.Result;
-import com.quiz_app.result_resource.data.ResultQuestion;
-import com.quiz_app.result_resource.data.ResultRepository;
+import com.quiz_app.result_resource.data.*;
 import com.quiz_app.result_resource.exception.ContentNotFound;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -56,5 +54,51 @@ public class ResultService {
 
     public List<Result> getResults(){
         return repository.findAll();
+    }
+
+    public ResultQuestion mapToResultQuestionModel(ResultQuestionRequestDto dto){
+        ResultQuestion question = new ResultQuestion();
+        question.setQuestionId(dto.getQuestionId());
+        question.setAnswer(dto.getAnswer());
+        return question;
+    }
+
+    public Result mapToResultModel(ResultRequestDto dto){
+        Result result = new Result();
+        result.setQuizId(dto.getQuizId());
+
+        List<ResultQuestion> resultQuestionList = dto.getAnswers()
+                .stream()
+                .map(this::mapToResultQuestionModel)
+                .toList();
+
+        result.setAnswers(resultQuestionList);
+        return result;
+    }
+
+    public ResultQuestionResponseDto mapToResultQuestionResponseDto(ResultQuestion question){
+        ResultQuestionResponseDto dto = new ResultQuestionResponseDto();
+        dto.setId(question.getId());
+        dto.setAnswer(question.getAnswer());
+        dto.setQuestionId(question.getQuestionId());
+        dto.setCorrectAnswer(question.getCorrectAnswer());
+
+        return dto;
+    }
+
+    public ResultResponseDto mapToResultResponseDto(Result result){
+        ResultResponseDto dto = new ResultResponseDto();
+        dto.setId(result.getId());
+        dto.setScore(result.getScore());
+        dto.setSubmittedAt(result.getSubmittedAt());
+        dto.setQuizId(result.getQuizId());
+
+        List<ResultQuestionResponseDto> responseDtos = result.getAnswers().stream()
+                .map(this::mapToResultQuestionResponseDto)
+                .toList();
+
+        dto.setAnswers(responseDtos);
+
+        return dto;
     }
 }
