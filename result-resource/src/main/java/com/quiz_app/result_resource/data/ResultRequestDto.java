@@ -1,8 +1,10 @@
 package com.quiz_app.result_resource.data;
 
+import java.util.List;
+
 public class ResultRequestDto {
     private long quizId;
-    private String answers;
+    private List<ResultQuestionRequestDto> answers;
 
     public long getQuizId() {
         return quizId;
@@ -12,11 +14,11 @@ public class ResultRequestDto {
         this.quizId = quizId;
     }
 
-    public String getAnswers() {
+    public List<ResultQuestionRequestDto> getAnswers() {
         return answers;
     }
 
-    public void setAnswers(String answers) {
+    public void setAnswers(List<ResultQuestionRequestDto> answers) {
         this.answers = answers;
     }
 }
