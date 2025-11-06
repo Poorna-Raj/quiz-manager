@@ -1,4 +1,4 @@
-package com.quiz_app.user_resource.UserException;
+package com.quiz_app.user_resource.exception;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -19,8 +19,8 @@ public ResponseEntity<ApiError> handleBadRequest(BadRequestException ex, WebRequ
     return new ResponseEntity<>(error,HttpStatus.BAD_REQUEST);
 }
 
-    @ExceptionHandler(ContentNotFound.class)
-    public ResponseEntity<ApiError> handleQuestionNotFound(ContentNotFound ex, WebRequest req){
+    @ExceptionHandler(ContentNotFoundException.class)
+    public ResponseEntity<ApiError> handleQuestionNotFound(ContentNotFoundException ex, WebRequest req){
         ApiError error = new ApiError(
                 HttpStatus.NOT_FOUND.value(),
                 HttpStatus.NOT_FOUND.getReasonPhrase(),

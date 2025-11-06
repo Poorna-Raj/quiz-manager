@@ -1,7 +1,5 @@
 package com.quiz_app.user_resource.data;
 
-
-
 import jakarta.persistence.*;
 
 @Entity
@@ -12,10 +10,13 @@ public class User
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id" )
     private long id;
+
     @Column(name = "username")
     private  String username;
+
     @Column(name = "age")
-    private int age;
+    private Integer age;
+
     @Column(name = "password")
     private String password;
 
@@ -35,11 +36,11 @@ public class User
         this.id = id;
     }
 
-    public int getAge() {
+    public Integer getAge() {
         return age;
     }
 
-    public void setAge(int age) {
+    public void setAge(Integer age) { // <-- Also changed parameter type
         this.age = age;
     }
 

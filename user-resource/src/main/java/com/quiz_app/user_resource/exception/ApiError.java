@@ -1,4 +1,4 @@
-package com.quiz_app.user_resource.UserException;
+package com.quiz_app.user_resource.exception;
 
 import java.time.LocalDateTime;
 
@@ -57,4 +57,3 @@ public class ApiError {
         this.path = path;
     }
 }
-
