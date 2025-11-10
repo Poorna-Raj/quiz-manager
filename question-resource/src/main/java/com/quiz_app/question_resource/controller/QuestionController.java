@@ -41,4 +41,9 @@ public class QuestionController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @GetMapping(path = "/questions/{id}/correct-answer")
+    public ResponseEntity<String> getCorrectAnswerByQuestionId(@PathVariable long id) {
+        return new ResponseEntity<>(service.getCorrectAnswerById(id),HttpStatus.OK);
+    }
 }
