@@ -15,7 +15,7 @@ public class ResultServiceClient {
         if(requestedResult.getQuestionId() <= 0){
             throw new BadRequest("Invalid question ID of " + requestedResult.getQuestionId());
         }
-        String url = "http://localhost:8081/question-resource/internal/questions/"+requestedResult.getQuestionId()+"/correct-answer";
+        String url = "http://localhost:8081/question-resource/questions/"+requestedResult.getQuestionId()+"/correct-answer";
         String answer = restTemplate.getForObject(url,String.class);
         requestedResult.setAnswer(answer);
 

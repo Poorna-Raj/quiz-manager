@@ -110,6 +110,12 @@ public class QuestionService {
         return true;
     }
 
+    public String getCorrectAnswerById(long id){
+        Question question = questionRepository.findById(id).
+                orElseThrow(()->new BadRequestException("Invalid question ID"));
+        return question.getAnswer();
+    }
+
     public Question mapToQuestion(QuestionRequestDto dto){
         Question question = new Question();
         question.setQuestion(dto.getQuestion());
