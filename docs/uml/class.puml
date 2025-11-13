@@ -200,10 +200,6 @@ class QuizQuestion{
 
 Quiz *-- QuizQuestion : belongs to
 
-class QuizQuestionRequestDto{
-    - questionId : long
-}
-
 class QuizQuestionResponseDto{
     - id : long
     - questionId : long
@@ -257,12 +253,14 @@ QuizService ..> QuizResponseDto : uses
 QuizService ..> QuizRequestDto : uses
 QuizService ..> QuizQuestion : uses
 QuizService ..> QuizQuestionResponseDto : uses
+QuizService ..> QuestionListDto : uses
 
 class QuestionServiceClient{
     + getQuestionListById(questionListId : long) : QuestionListDto
 }
 
 QuizService --> QuestionServiceClient : uses
+QuestionServiceClient ..> QuestionListDto : uses
 
 QuizService --> QuizRepository : uses
 
@@ -279,4 +277,96 @@ class QuizController{
 QuizController --> QuizService : uses
 QuizController ..> QuizRequestDto : uses
 QuizController ..> QuizResponseDto : uses
+
+class Result{
+    - id :  long
+    - quizId : long
+    - score : double
+    - submittedAt : LocalDateTime
+}
+
+class ResultQuestion{
+    - id : long
+    - questionId : long
+    - answer : String
+    - correctAnswer : String
+}
+
+ResultQuestion "*" --* "1" Result : belongs to
+
+class ResultQuestionRequestDto{
+    - questionId : long
+    - answer : String
+}
+
+class ResultQuestionResponseDto{
+    - id : long
+    - questionId : long
+    - answer : String
+    - correctAnswer : String
+}
+
+interface ResultRepository{}
+
+ResultRepository --|> JpaRepository
+
+class ResultRequestDto {
+    - quizId : long
+}
+
+ResultRequestDto "1" --> "*" ResultQuestionRequestDto : has
+
+class ResultResponseDto {
+    - id : long
+    - quizId : long
+    - score : double
+    - submittedAt : LocalDateTime
+}
+
+ResultResponseDto "1" --> "*" ResultQuestionResponseDto : has
+
+class ResultServiceClient {
+    + getQuestionResults(requestedResult : ResultQuestion) : ResultQuestion
+}
+
+ResultServiceClient ..> ResultQuestion : uses
+
+class ResultService{
+    - repository : ResultRepository
+    - serviceClient : ResultServiceClient
+
+    + populateCorrectAnswers(result : Result) : Result
+    + calculateTheScore(result : Result) : Result
+    + saveResult(result : Result) : Result
+    + deleteResultById(id : long) : boolean
+    + getResultById(id : long) : Result
+    + getResults() : List<Result>
+    + mapToResultQuestionModel(dto : ResultQuestionRequestDto) : ResultQuestion
+    + mapToResultModel(dto : ResultRequestDto) : Result
+    + mapToResultQuestionResponseDto(question : ResultQuestion) : ResultQuestionResponseDto
+    + mapToResultResponseDto(result : Result) : ResultResponseDto
+}
+
+ResultService --> ResultRepository : uses
+ResultService --> ResultServiceClient : uses
+ResultService ..> Result : uses
+ResultService ..> ResultQuestionRequestDto : uses
+ResultService ..> ResultQuestion : uses
+ResultService ..> ResultRequestDto : uses
+ResultService ..> ResultQuestionResponseDto : uses
+ResultService ..> ResultResponseDto : uses
+
+class ResultController{
+    - service : ResultService
+
+    + createResult(ResultRequestDto: dto) : ResponseEntity<ResultResponseDto>
+    + deleteResult(id : long) : ResponseEntity<HttpStatus>
+    + getResultById(id : long) : ResponseEntity<ResultResponseDto>
+    + getAllResults() : ResponseEntity<List<ResultResponseDto>>
+}
+
+ResultController --> ResultService : uses
+ResultController ..> ResultRequestDto : uses
+ResultController ..> ResultResponseDto : uses
+
 @enduml
