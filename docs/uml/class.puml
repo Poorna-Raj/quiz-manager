@@ -1,372 +1,409 @@
 @startuml
-
-class Question{
-    - id : long
-    - question : String
-    - answer : String
-    - marks : int
-}
-
-class Option{
-    - id : long
-    - option_text : String
-}
-
-Option "1..*" --* "1" Question : has
-
 interface JpaRepository{
 }
+package "Question Service" #LightYellow{
+    package "Data" #lightblue{
+        class Question{
+            - id : long
+            - question : String
+            - answer : String
+            - marks : int
+        }
+    
+        class Option{
+            - id : long
+            - option_text : String
+        }
+    
+        Option "1..*" --* "1" Question : has
 
-interface QuestionRepository{
+        interface QuestionRepository{
+        }
+
+        JpaRepository <|-- QuestionRepository
+    }
+
+    package "Service" #lightgreen{
+        class QuestionService{
+            + createQuestion(question : Question) : Question
+            + getQuestionById(long id) : Question
+            + updateQuestionById(id : long, editedQuestion : Question) : Question
+            + deleteQuestionById(id : long) : boolean
+            + mapToQuestion(dto : QuestionRequestDto) : Question
+            + mapToDto(question : Question) : QuestionResponseDto
+            + checkAnswerInTheOptions(question : Question) : boolean
+        }
+    }
+
+    package "Data" #lightblue{
+        class QuestionResponseDto{
+            - id : long
+            - question : String
+            - options : List<String>
+            - marks : int
+        }
+
+        class QuestionRequestDto{
+            - question : String
+            - options : List<String>
+            - answer : String
+            - marks : int
+        }
+    }
+
+    QuestionService --> QuestionRepository : uses
+    QuestionService ..> Question : uses
+    QuestionService ..> QuestionRequestDto : uses
+    QuestionService ..> QuestionResponseDto : uses
+
+    package "Controller" #lightpink{
+        class QuestionController{
+            + createQuestion(dto : QuestionRequestDto) : ResponseEntity<QuestionResponseDto>
+            + getQuestionById(id : long) : ResponseEntity<QuestionResponseDto>
+            + updateQuestionById(id : long,dto : QuestionRequestDto) : ResponseEntity<QuestionResponseDto>
+            + deleteQuestionById(id : long) : ResponseEntity<HttpStatus>
+        }
+    }
+
+    QuestionController --> QuestionService : uses
+    QuestionController ..> QuestionResponseDto : uses
+    QuestionController ..> QuestionRequestDto : uses
+
+    package "Data" #lightblue{
+        class QuestionList{
+            - id : long
+            - topic : String
+            - name : String
+        }
+
+        QuestionList "1" --* "0..*" Question : belongs to
+
+        interface QuestionListRepository{
+        }
+
+        QuestionListRepository --|> JpaRepository
+
+        class QuestionListRequestDto{
+            - topic : String
+            - name : String
+        }
+
+        class QuestionListResponseDto{
+            - id : long
+            - topic : String
+            - name : String
+            - questions_id : List<Long>
+        }
+    }
+
+    package "Service" #lightgreen{
+        class QuestionListService{
+            + createQuestionList(list : QuestionList) : QuestionList
+            + updateQuestionList(id : long, list : QuestionList) : QuestionList
+            + getAllQuestionList() : List<QuestionList>
+            + deleteById(id : long) : boolean
+            + clearAllQuestionsById(id : long) : QuestionList
+            + getQuestionListById(id : long) : QuestionList
+            + mapToModel(list : QuestionListRequestDto) : QuestionList
+            + mapToDto(list : QuestionList) : QuestionListResponseDto
+        }
+    }
+
+    QuestionListService --> QuestionListRepository : uses
+    QuestionListService ..> QuestionList : uses
+    QuestionListService ..> QuestionListResponseDto : uses
+    QuestionListService ..> QuestionListRequestDto : uses
+
+    package "Controller" #lightpink{
+        class QuestionListController{
+            + createQuestionList(list : QuestionListRequestDto) : ResponseEntity<QuestionListResponseDto>
+            + getQuestionListById(id : long) : ResponseEntity<QuestionListResponseDto>
+            + getAllQuestionLists() : ResponseEntity<List<QuestionListResponseDto>>
+            + updateById(id : long ,dto : QuestionListRequestDto) : ResponseEntity<QuestionListResponseDto>
+            + deleteById(id : long) : ResponseEntity<HttpStatus>
+            + deleteQuestionOnAListById(id : long) : ResponseEntity<QuestionListResponseDto>
+        }
+    }
+
+    QuestionListController --> QuestionListService : uses
+    QuestionListController ..> QuestionList : uses
+    QuestionListController ..> QuestionListRequestDto : uses
+    QuestionListController ..> QuestionListResponseDto : uses
 }
 
-JpaRepository <|-- QuestionRepository
+package "User Service" #LightCyan{
+    package "Data" #lightblue{
+        class User{
+            - id : long
+            - username : String
+            - password : String
+            - age : int
+        }
 
-class QuestionService{
-    + createQuestion(question : Question) : Question
-    + getQuestionById(long id) : Question
-    + updateQuestionById(id : long, editedQuestion : Question) : Question
-    + deleteQuestionById(id : long) : boolean
-    + mapToQuestion(dto : QuestionRequestDto) : Question
-    + mapToDto(question : Question) : QuestionResponseDto
-    + checkAnswerInTheOptions(question : Question) : boolean
+        interface UserRepository{
+        }
+    }
+    UserRepository --|> JpaRepository
+
+    package "Service" #lightgreen{
+        class UserService{
+            + createUser(user : User) : User
+            + updateUser(id : long, user : User) : User
+            + getUserByUsername(username : String) : User
+            + getUserById(id : long) : User
+            + deleteUserById(id : long) : boolean
+            + mapToDto(user : User) : UserResponseDto
+            + mapToUser(dto : UserRequestDto) : User
+        }
+    }
+
+    UserService ..> User : uses
+
+    package "Data" #lightblue{
+        class UserResponseDto{
+            - id : long
+            - username : String
+            - age : int
+        }
+
+        class UserRequestDto{
+            - username : String
+            - password : String
+            - age : int
+        }
+
+        class UserLoginDto{
+            - username : String
+            - password : String
+        }
+    }
+    UserService --> UserRepository : uses
+    UserService ..> UserResponseDto : uses
+    UserService ..> UserRequestDto : uses
+
+    package "Controller" #lightpink{
+        class UserController{
+            + login(user : UserLoginDto) : ResponseEntity<UserResponseDto>
+            + register(user : UserRequestDto) : ResponseEntity<UserResponseDto>
+        }
+    }
+
+    UserController --> UserService : uses
+    UserController ..> UserResponseDto : uses
+    UserController ..> UserRequestDto : uses
+    UserController ..> UserLoginDto : uses
 }
 
-class QuestionResponseDto{
-    - id : long
-    - question : String
-    - options : List<String>
-    - marks : int
+package "Quiz Service" #LightGoldenRodYellow{
+    package "Data" #lightblue{
+        class Quiz{
+            - id : long
+            - questionListId : long
+            - name : String
+            - questionCount : int
+            - createdBy : String
+            - createdAt : LocalDateTime
+            - questions : List<QuizQuestion>
+            - status : String
+            - description : String
+            - type : String
+        }
+
+        class QuestionListDto{
+            - id : long
+            - topic : String
+            - name : String
+            - questions_id : List<Long>
+        }
+
+        class QuizQuestion{
+            - id : long
+            - questionId : long
+            - quiz : Quiz
+        }
+
+        Quiz *-- QuizQuestion : belongs to
+
+        class QuizQuestionResponseDto{
+            - id : long
+            - questionId : long
+        }
+
+        interface QuizRepository{}
+
+        QuizRepository --|> JpaRepository
+
+        class QuizRequestDto{
+            - questionListId : long
+            - questionCount : int
+            - createdBy : String
+            - name : String
+            - description : String
+            - type : String
+        }
+
+        class QuizResponseDto{
+            - id : long
+            - questionListId : long
+            - questionCount : int
+            - createdBy : String
+            - createdAt : LocalDateTime
+            - questions : List<QuizQuestionResponseDto>
+            - status : String
+            - name : String
+            - description : String
+            - type : String
+        }
+    }
+
+    QuizResponseDto ..> QuizQuestionResponseDto : uses
+
+    package "Service" #lightgreen{
+        class QuizService{
+            - repository : QuizRepository
+            - client : QuestionServiceClient
+
+            + createQuiz(quiz : Quiz) : Quiz
+            + updateQuiz(id : long, quiz : Quiz) : Quiz
+            + deleteQuiz(id : long) : boolean
+            + getQuizById(id : long) : Quiz
+            + getAllQuiz() : List<Quiz>
+            + mapToQuizModel(dto : QuizRequestDto) : Quiz
+            + mapToQuizDto(createdQuiz : Quiz) : QuizResponseDto
+            + mapToQuizQuestionDto(question : QuizQuestion) : QuizQuestionResponseDto
+            + generateQuizQuestions(quiz : Quiz, questionListId : long, count : int) : List<QuizQuestion>
+        }
+
+        QuizService ..> Quiz : uses
+        QuizService ..> QuizResponseDto : uses
+        QuizService ..> QuizRequestDto : uses
+        QuizService ..> QuizQuestion : uses
+        QuizService ..> QuizQuestionResponseDto : uses
+        QuizService ..> QuestionListDto : uses
+
+        class QuestionServiceClient{
+            + getQuestionListById(questionListId : long) : QuestionListDto
+        }
+
+        QuizService --> QuestionServiceClient : uses
+        QuestionServiceClient ..> QuestionListDto : uses
+
+        QuizService --> QuizRepository : uses
+    }
+
+    package "Controller" #lightpink{
+        class QuizController{
+            - service : QuizService
+
+            + createQuiz(dto : QuizRequestDto) : ResponseEntity<QuizResponseDto>
+            + updateQuizById(dto : QuizRequestDto, id : long) : ResponseEntity<QuizResponseDto>
+            + deleteQuizById(id : long) : ResponseEntity<HttpStatus>
+            + getQuizById(id : long) : ResponseEntity<QuizResponseDto>
+            + getAllQuizzes() : ResponseEntity<List<QuizResponseDto>>
+        }
+
+        QuizController --> QuizService : uses
+        QuizController ..> QuizRequestDto : uses
+        QuizController ..> QuizResponseDto : uses
+    }
 }
 
-class QuestionRequestDto{
-    - question : String
-    - options : List<String>
-    - answer : String
-    - marks : int
+package "Result Service" #LightGray{
+    package "Data" #lightblue{
+        class Result{
+            - id :  long
+            - quizId : long
+            - score : double
+            - submittedAt : LocalDateTime
+        }
+
+        class ResultQuestion{
+            - id : long
+            - questionId : long
+            - answer : String
+            - correctAnswer : String
+        }
+
+        ResultQuestion "*" --* "1" Result : belongs to
+
+        class ResultQuestionRequestDto{
+            - questionId : long
+            - answer : String
+        }
+
+        class ResultQuestionResponseDto{
+            - id : long
+            - questionId : long
+            - answer : String
+            - correctAnswer : String
+        }
+
+        interface ResultRepository{}
+
+        ResultRepository --|> JpaRepository
+
+        class ResultRequestDto {
+            - quizId : long
+        }
+
+        ResultRequestDto "1" --> "*" ResultQuestionRequestDto : has
+
+        class ResultResponseDto {
+            - id : long
+            - quizId : long
+            - score : double
+            - submittedAt : LocalDateTime
+        }
+
+        ResultResponseDto "1" --> "*" ResultQuestionResponseDto : has
+    }
+    
+    package "Service" #lightgreen{
+        class ResultServiceClient {
+            + getQuestionResults(requestedResult : ResultQuestion) : ResultQuestion
+        }
+
+        ResultServiceClient ..> ResultQuestion : uses
+
+        class ResultService{
+            - repository : ResultRepository
+            - serviceClient : ResultServiceClient
+
+            + populateCorrectAnswers(result : Result) : Result
+            + calculateTheScore(result : Result) : Result
+            + saveResult(result : Result) : Result
+            + deleteResultById(id : long) : boolean
+            + getResultById(id : long) : Result
+            + getResults() : List<Result>
+            + mapToResultQuestionModel(dto : ResultQuestionRequestDto) : ResultQuestion
+            + mapToResultModel(dto : ResultRequestDto) : Result
+            + mapToResultQuestionResponseDto(question : ResultQuestion) : ResultQuestionResponseDto
+            + mapToResultResponseDto(result : Result) : ResultResponseDto
+        }
+
+        ResultService --> ResultRepository : uses
+        ResultService --> ResultServiceClient : uses
+        ResultService ..> Result : uses
+        ResultService ..> ResultQuestionRequestDto : uses
+        ResultService ..> ResultQuestion : uses
+        ResultService ..> ResultRequestDto : uses
+        ResultService ..> ResultQuestionResponseDto : uses
+        ResultService ..> ResultResponseDto : uses
+    }
+
+    package "Controller" #lightpink{
+        class ResultController{
+            - service : ResultService
+
+            + createResult(ResultRequestDto: dto) : ResponseEntity<ResultResponseDto>
+            + deleteResult(id : long) : ResponseEntity<HttpStatus>
+            + getResultById(id : long) : ResponseEntity<ResultResponseDto>
+            + getAllResults() : ResponseEntity<List<ResultResponseDto>>
+        }
+
+        ResultController --> ResultService : uses
+        ResultController ..> ResultRequestDto : uses
+        ResultController ..> ResultResponseDto : uses
+    }
 }
-
-QuestionService --> QuestionRepository : uses
-QuestionService ..> Question : uses
-QuestionService ..> QuestionRequestDto : uses
-QuestionService ..> QuestionResponseDto : uses
-
-class QuestionController{
-    + createQuestion(dto : QuestionRequestDto) : ResponseEntity<QuestionResponseDto>
-    + getQuestionById(id : long) : ResponseEntity<QuestionResponseDto>
-    + updateQuestionById(id : long,dto : QuestionRequestDto) : ResponseEntity<QuestionResponseDto>
-    + deleteQuestionById(id : long) : ResponseEntity<HttpStatus>
-}
-
-QuestionController --> QuestionService : uses
-QuestionController ..> QuestionResponseDto : uses
-QuestionController ..> QuestionRequestDto : uses
-
-class User{
-    - id : long
-    - username : String
-    - password : String
-    - age : int
-}
-
-interface UserRepository{
-}
-
-UserRepository --|> JpaRepository
-
-class UserService{
-    + createUser(user : User) : User
-    + updateUser(id : long, user : User) : User
-    + getUserByUsername(username : String) : User
-    + getUserById(id : long) : User
-    + deleteUserById(id : long) : boolean
-    + mapToDto(user : User) : UserResponseDto
-    + mapToUser(dto : UserRequestDto) : User
-}
-
-UserService ..> User : uses
-
-class UserResponseDto{
-    - id : long
-    - username : String
-    - age : int
-}
-
-class UserRequestDto{
-    - username : String
-    - password : String
-    - age : int
-}
-
-class UserLoginDto{
-    - username : String
-    - password : String
-}
-
-UserService --> UserRepository : uses
-UserService ..> UserResponseDto : uses
-UserService ..> UserRequestDto : uses
-
-class UserController{
-    + login(user : UserLoginDto) : ResponseEntity<UserResponseDto>
-    + register(user : UserRequestDto) : ResponseEntity<UserResponseDto>
-}
-
-UserController --> UserService : uses
-UserController ..> UserResponseDto : uses
-UserController ..> UserRequestDto : uses
-UserController ..> UserLoginDto : uses
-
-class QuestionList{
-    - id : long
-    - topic : String
-    - name : String
-}
-
-QuestionList "1" --* "0..*" Question : belongs to
-
-interface QuestionListRepository{
-}
-
-QuestionListRepository --|> JpaRepository
-
-class QuestionListRequestDto{
-    - topic : String
-    - name : String
-}
-
-class QuestionListResponseDto{
-    - id : long
-    - topic : String
-    - name : String
-    - questions_id : List<Long>
-}
-
-class QuestionListService{
-    + createQuestionList(list : QuestionList) : QuestionList
-    + updateQuestionList(id : long, list : QuestionList) : QuestionList
-    + getAllQuestionList() : List<QuestionList>
-    + deleteById(id : long) : boolean
-    + clearAllQuestionsById(id : long) : QuestionList
-    + getQuestionListById(id : long) : QuestionList
-    + mapToModel(list : QuestionListRequestDto) : QuestionList
-    + mapToDto(list : QuestionList) : QuestionListResponseDto
-}
-
-QuestionListService --> QuestionListRepository : uses
-QuestionListService ..> QuestionList : uses
-QuestionListService ..> QuestionListResponseDto : uses
-QuestionListService ..> QuestionListRequestDto : uses
-
-class QuestionListController{
-    + createQuestionList(list : QuestionListRequestDto) : ResponseEntity<QuestionListResponseDto>
-    + getQuestionListById(id : long) : ResponseEntity<QuestionListResponseDto>
-    + getAllQuestionLists() : ResponseEntity<List<QuestionListResponseDto>>
-    + updateById(id : long ,dto : QuestionListRequestDto) : ResponseEntity<QuestionListResponseDto>
-    + deleteById(id : long) : ResponseEntity<HttpStatus>
-    + deleteQuestionOnAListById(id : long) : ResponseEntity<QuestionListResponseDto>
-}
-
-QuestionListController --> QuestionListService : uses
-QuestionListController ..> QuestionList : uses
-QuestionListController ..> QuestionListRequestDto : uses
-QuestionListController ..> QuestionListResponseDto : uses
-
-class Quiz{
-    - id : long
-    - questionListId : long
-    - name : String
-    - questionCount : int
-    - createdBy : String
-    - createdAt : LocalDateTime
-    - questions : List<QuizQuestion>
-    - status : String
-    - description : String
-    - type : String
-}
-
-class QuestionListDto{
-    - id : long
-    - topic : String
-    - name : String
-    - questions_id : List<Long>
-}
-
-class QuizQuestion{
-    - id : long
-    - questionId : long
-    - quiz : Quiz
-}
-
-Quiz *-- QuizQuestion : belongs to
-
-class QuizQuestionResponseDto{
-    - id : long
-    - questionId : long
-}
-
-interface QuizRepository{}
-
-QuizRepository --|> JpaRepository
-
-class QuizRequestDto{
-    - questionListId : long
-    - questionCount : int
-    - createdBy : String
-    - name : String
-    - description : String
-    - type : String
-}
-
-class QuizResponseDto{
-    - id : long
-    - questionListId : long
-    - questionCount : int
-    - createdBy : String
-    - createdAt : LocalDateTime
-    - questions : List<QuizQuestionResponseDto>
-    - status : String
-    - name : String
-    - description : String
-    - type : String
-}
-
-QuizResponseDto ..> QuizQuestionResponseDto : uses
-
-class QuizService{
-    - repository : QuizRepository
-    - client : QuestionServiceClient
-
-    + createQuiz(quiz : Quiz) : Quiz
-    + updateQuiz(id : long, quiz : Quiz) : Quiz
-    + deleteQuiz(id : long) : boolean
-    + getQuizById(id : long) : Quiz
-    + getAllQuiz() : List<Quiz>
-    + mapToQuizModel(dto : QuizRequestDto) : Quiz
-    + mapToQuizDto(createdQuiz : Quiz) : QuizResponseDto
-    + mapToQuizQuestionDto(question : QuizQuestion) : QuizQuestionResponseDto
-    + generateQuizQuestions(quiz : Quiz, questionListId : long, count : int) : List<QuizQuestion>
-}
-
-QuizService ..> Quiz : uses
-QuizService ..> QuizResponseDto : uses
-QuizService ..> QuizRequestDto : uses
-QuizService ..> QuizQuestion : uses
-QuizService ..> QuizQuestionResponseDto : uses
-QuizService ..> QuestionListDto : uses
-
-class QuestionServiceClient{
-    + getQuestionListById(questionListId : long) : QuestionListDto
-}
-
-QuizService --> QuestionServiceClient : uses
-QuestionServiceClient ..> QuestionListDto : uses
-
-QuizService --> QuizRepository : uses
-
-class QuizController{
-    - service : QuizService
-
-    + createQuiz(dto : QuizRequestDto) : ResponseEntity<QuizResponseDto>
-    + updateQuizById(dto : QuizRequestDto, id : long) : ResponseEntity<QuizResponseDto>
-    + deleteQuizById(id : long) : ResponseEntity<HttpStatus>
-    + getQuizById(id : long) : ResponseEntity<QuizResponseDto>
-    + getAllQuizzes() : ResponseEntity<List<QuizResponseDto>>
-}
-
-QuizController --> QuizService : uses
-QuizController ..> QuizRequestDto : uses
-QuizController ..> QuizResponseDto : uses
-
-class Result{
-    - id :  long
-    - quizId : long
-    - score : double
-    - submittedAt : LocalDateTime
-}
-
-class ResultQuestion{
-    - id : long
-    - questionId : long
-    - answer : String
-    - correctAnswer : String
-}
-
-ResultQuestion "*" --* "1" Result : belongs to
-
-class ResultQuestionRequestDto{
-    - questionId : long
-    - answer : String
-}
-
-class ResultQuestionResponseDto{
-    - id : long
-    - questionId : long
-    - answer : String
-    - correctAnswer : String
-}
-
-interface ResultRepository{}
-
-ResultRepository --|> JpaRepository
-
-class ResultRequestDto {
-    - quizId : long
-}
-
-ResultRequestDto "1" --> "*" ResultQuestionRequestDto : has
-
-class ResultResponseDto {
-    - id : long
-    - quizId : long
-    - score : double
-    - submittedAt : LocalDateTime
-}
-
-ResultResponseDto "1" --> "*" ResultQuestionResponseDto : has
-
-class ResultServiceClient {
-    + getQuestionResults(requestedResult : ResultQuestion) : ResultQuestion
-}
-
-ResultServiceClient ..> ResultQuestion : uses
-
-class ResultService{
-    - repository : ResultRepository
-    - serviceClient : ResultServiceClient
-
-    + populateCorrectAnswers(result : Result) : Result
-    + calculateTheScore(result : Result) : Result
-    + saveResult(result : Result) : Result
-    + deleteResultById(id : long) : boolean
-    + getResultById(id : long) : Result
-    + getResults() : List<Result>
-    + mapToResultQuestionModel(dto : ResultQuestionRequestDto) : ResultQuestion
-    + mapToResultModel(dto : ResultRequestDto) : Result
-    + mapToResultQuestionResponseDto(question : ResultQuestion) : ResultQuestionResponseDto
-    + mapToResultResponseDto(result : Result) : ResultResponseDto
-}
-
-ResultService --> ResultRepository : uses
-ResultService --> ResultServiceClient : uses
-ResultService ..> Result : uses
-ResultService ..> ResultQuestionRequestDto : uses
-ResultService ..> ResultQuestion : uses
-ResultService ..> ResultRequestDto : uses
-ResultService ..> ResultQuestionResponseDto : uses
-ResultService ..> ResultResponseDto : uses
-
-class ResultController{
-    - service : ResultService
-
-    + createResult(ResultRequestDto: dto) : ResponseEntity<ResultResponseDto>
-    + deleteResult(id : long) : ResponseEntity<HttpStatus>
-    + getResultById(id : long) : ResponseEntity<ResultResponseDto>
-    + getAllResults() : ResponseEntity<List<ResultResponseDto>>
-}
-
-ResultController --> ResultService : uses
-ResultController ..> ResultRequestDto : uses
-ResultController ..> ResultResponseDto : uses
-
 @enduml
