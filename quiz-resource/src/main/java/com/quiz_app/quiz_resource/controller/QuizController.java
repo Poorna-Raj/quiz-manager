@@ -1,10 +1,13 @@
 package com.quiz_app.quiz_resource.controller;
 
 import com.quiz_app.quiz_resource.data.Quiz;
+import com.quiz_app.quiz_resource.data.QuizQuestionResponseDto;
 import com.quiz_app.quiz_resource.data.QuizRequestDto;
 import com.quiz_app.quiz_resource.data.QuizResponseDto;
 import com.quiz_app.quiz_resource.service.QuizService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -54,4 +57,13 @@ public class QuizController {
                 .toList();
         return new ResponseEntity<>(quizList,HttpStatus.OK);
     }
+
+    @GetMapping("/quizzes/paged")
+    public ResponseEntity<Page<QuizResponseDto>> getAllQuizzesPaged(Pageable pageable) {
+        Page<QuizResponseDto> dtoPage = service.getAllQuizzes(pageable);
+        return ResponseEntity.ok(dtoPage);
+    }
+
+
+
 }

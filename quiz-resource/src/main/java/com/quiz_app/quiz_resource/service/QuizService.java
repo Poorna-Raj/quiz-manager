@@ -4,6 +4,8 @@ import com.quiz_app.quiz_resource.data.*;
 import com.quiz_app.quiz_resource.exception.BadRequest;
 import com.quiz_app.quiz_resource.exception.ContentNotFound;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -32,6 +34,13 @@ public class QuizService {
         newQuiz.setName(quiz.getName());
 
         return repository.save(newQuiz);
+    }
+
+    public Page <QuizResponseDto>getAllQuizzes(Pageable pageable)
+    {
+        Page<Quiz> quizPage = repository.findAll(pageable);
+        return quizPage.map(this::mapToQuizDto);
+
     }
 
     public Quiz updateQuiz(long id,Quiz quiz){
