@@ -19,7 +19,7 @@ public class QuizService {
     private QuizRepository repository;
 
     @Autowired
-    private QuestionServiceClient client;
+    private QuizServiceClient client;
 
     public Quiz createQuiz(Quiz quiz){
         Quiz newQuiz = new Quiz();
@@ -31,6 +31,8 @@ public class QuizService {
         }
         newQuiz.setQuestionCount(quiz.getQuestionCount());
         newQuiz.setQuestionListId(quiz.getQuestionListId());
+        newQuiz.setDescription(quiz.getDescription());
+        newQuiz.setType(quiz.getType());
         newQuiz.setName(quiz.getName());
 
         return repository.save(newQuiz);
@@ -73,6 +75,8 @@ public class QuizService {
         existingQuiz.setQuestionCount(quiz.getQuestionCount());
         existingQuiz.setCreatedBy(quiz.getCreatedBy());
         existingQuiz.setQuestionListId(quiz.getQuestionListId());
+        existingQuiz.setType(quiz.getType());
+        existingQuiz.setDescription(quiz.getDescription());
 
         return repository.save(existingQuiz);
     }

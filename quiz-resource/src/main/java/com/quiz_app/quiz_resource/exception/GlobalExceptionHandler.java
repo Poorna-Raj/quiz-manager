@@ -31,4 +31,15 @@ public class GlobalExceptionHandler {
 
         return new ResponseEntity<>(error,HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(QuestionServiceUnavailable.class)
+    public ResponseEntity<ApiError> handlerQuestionServiceUnavailable(QuestionServiceUnavailable ex,WebRequest req){
+        ApiError error = new ApiError(
+                HttpStatus.SERVICE_UNAVAILABLE.value(),
+                HttpStatus.SERVICE_UNAVAILABLE.getReasonPhrase(),
+                ex.getMessage(),
+                req.getDescription(false).replace("uri=","")
+        );
+        return new ResponseEntity<>(error,HttpStatus.SERVICE_UNAVAILABLE);
+    }
 }
