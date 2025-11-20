@@ -11,7 +11,7 @@ public class Option {
     private long id;
 
     @Column(name = "option_text")
-    private String option_text;
+    private String optionText;
 
     @ManyToOne
     @JoinColumn(name = "question_id")
@@ -25,12 +25,12 @@ public class Option {
         this.id = id;
     }
 
-    public String getOption_text() {
-        return option_text;
+    public String getOptionText() {
+        return optionText;
     }
 
-    public void setOption_text(String option_text) {
-        this.option_text = option_text;
+    public void setOptionText(String optionText) {
+        this.optionText = optionText;
     }
 
     public Question getQuestion() {
