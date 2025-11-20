@@ -130,7 +130,7 @@ public class QuestionService {
         List<Option> options = dto.getOptions().stream()
                 .map(optText -> {
                     Option option = new Option();
-                    option.setOption_text(optText);
+                    option.setOptionText(optText);
                     option.setQuestion(question);
                     return option;
                 })
@@ -151,7 +151,7 @@ public class QuestionService {
         dto.setMarks(question.getMarks());
 
         List<String> optionTexts = question.getOptions().stream()
-                .map(Option::getOption_text)
+                .map(Option::getOptionText)
                 .collect(Collectors.toList());
 
         dto.setOptions(optionTexts);
@@ -162,7 +162,7 @@ public class QuestionService {
 
     public boolean checkAnswerInTheOptions(Question question){
         for(Option option:question.getOptions()){
-            if(option.getOption_text().equalsIgnoreCase(question.getAnswer())){
+            if(option.getOptionText().equalsIgnoreCase(question.getAnswer())){
                 return false;
             }
         }
