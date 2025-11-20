@@ -8,6 +8,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="quiz-resource" />
         <module name="user-resource" />
+        <module name="quiz-service" />
         <module name="question-resource" />
         <module name="result-resource" />
       </profile>
@@ -17,6 +18,7 @@
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="question-resource" options="-parameters" />
       <module name="quiz-resource" options="-parameters" />
+      <module name="quiz-service" options="-parameters" />
       <module name="result-resource" options="-parameters" />
       <module name="user-resource" options="-parameters" />
     </option>

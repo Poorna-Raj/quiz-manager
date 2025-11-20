@@ -3,6 +3,7 @@
   <component name="Encoding">
     <file url="file://$PROJECT_DIR$/question-resource/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/quiz-resource/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/quiz-service/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/result-resource/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/user-resource/src/main/java" charset="UTF-8" />
   </component>
