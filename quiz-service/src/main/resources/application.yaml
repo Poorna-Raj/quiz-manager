@@ -1,3 +1,24 @@
 spring:
   application:
     name: quiz-service
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+
+server:
+  port: 8084
+  servlet:
+    context-path: /quiz-service
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      questionService:
+        slidingWindowSize: 10
+        failureRateThreshold: 50
+        waitDurationInOpenState: 5s
