@@ -30,8 +30,13 @@ public class Quiz {
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL,orphanRemoval = true)
-    private List<Question> questions = new ArrayList<>();
+    @ManyToMany
+    @JoinTable(
+            name = "quiz_questions",
+            joinColumns = @JoinColumn(name = "quiz_id"),
+            inverseJoinColumns = @JoinColumn(name = "question_id")
+    )
+    private List<Question> questions;
 
     @Column(name = "status")
     private String status = "ACTIVE";

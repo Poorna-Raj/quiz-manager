@@ -28,10 +28,6 @@ public class Question {
     @Column(name = "marks")
     private int marks;
 
-    @ManyToOne
-    @JoinColumn(name = "quiz_id")
-    private Quiz quiz;
-
     public long getId() {
         return id;
     }
@@ -78,13 +74,5 @@ public class Question {
 
     public void setMarks(int marks) {
         this.marks = marks;
-    }
-
-    public Quiz getQuiz() {
-        return quiz;
-    }
-
-    public void setQuiz(Quiz quiz) {
-        this.quiz = quiz;
     }
 }
