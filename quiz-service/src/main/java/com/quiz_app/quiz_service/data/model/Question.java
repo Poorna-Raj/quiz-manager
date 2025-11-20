@@ -2,6 +2,7 @@ package com.quiz_app.quiz_service.data.model;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -15,7 +16,7 @@ public class Question {
     private String question;
 
     @OneToMany(mappedBy = "question",cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Option> options;
+    private List<Option> options = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "question_list_id",nullable = false)
@@ -26,6 +27,10 @@ public class Question {
 
     @Column(name = "marks")
     private int marks;
+
+    @ManyToOne
+    @JoinColumn(name = "quiz_id")
+    private Quiz quiz;
 
     public long getId() {
         return id;
@@ -73,5 +78,13 @@ public class Question {
 
     public void setMarks(int marks) {
         this.marks = marks;
+    }
+
+    public Quiz getQuiz() {
+        return quiz;
+    }
+
+    public void setQuiz(Quiz quiz) {
+        this.quiz = quiz;
     }
 }
