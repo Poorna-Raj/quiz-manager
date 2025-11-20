@@ -11,10 +11,13 @@ public class QuestionList {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "question_list_id")
     private long id;
+
     @Column(name = "topic")
     private String topic;
+
     @Column(name = "name", unique = true)
     private String name;
+
     @OneToMany(mappedBy = "list", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Question> questions;
 
