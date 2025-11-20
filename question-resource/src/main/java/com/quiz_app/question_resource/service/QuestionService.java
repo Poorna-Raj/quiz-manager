@@ -3,9 +3,15 @@ package com.quiz_app.question_resource.service;
 import com.quiz_app.question_resource.data.*;
 import com.quiz_app.question_resource.exception.BadRequestException;
 import com.quiz_app.question_resource.exception.ContentNotFound;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.querydsl.QPageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+
+
+
 
 import java.util.List;
 import java.util.Optional;
@@ -163,5 +169,15 @@ public class QuestionService {
         return true;
     }
 
-    //TODO::add get all question method with pagination
+    public Page<QuestionResponseDto> getAllQuestions(Pageable Pageable)
+    {
+        Page<Question> page = questionRepository.findAll(Pageable);
+
+        return page.map(this::mapToDto);
+
+
+
+    }
+
+
 }

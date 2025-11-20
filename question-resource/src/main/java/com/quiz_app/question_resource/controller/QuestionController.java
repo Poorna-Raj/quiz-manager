@@ -5,6 +5,8 @@ import com.quiz_app.question_resource.data.QuestionRequestDto;
 import com.quiz_app.question_resource.data.QuestionResponseDto;
 import com.quiz_app.question_resource.service.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -45,5 +47,12 @@ public class QuestionController {
     @GetMapping(path = "/questions/{id}/correct-answer")
     public ResponseEntity<String> getCorrectAnswerByQuestionId(@PathVariable long id) {
         return new ResponseEntity<>(service.getCorrectAnswerById(id),HttpStatus.OK);
+    }
+
+    @GetMapping("/paged")
+    public ResponseEntity<Page<QuestionResponseDto>> getAllQuestionsPaged(Pageable pageable) {
+        QuestionService questionService;
+        Page<QuestionResponseDto> dtoPage = service.getAllQuestions(pageable);
+        return ResponseEntity.ok(dtoPage);
     }
 }
